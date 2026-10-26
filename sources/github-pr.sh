@@ -12,10 +12,11 @@ nwe_github_pr_items() {
 }
 
 nwe_github_pr_choose() {
-  local toggle
-  toggle="$(nwe_toggle_mine_key)" || return 1
-  export -f nwe_github_pr_list nwe_github_pr_lines nwe_github_pr_all nwe_github_pr_mine nwe_github_pr_toggle
-  printf '%s\n' "$1" | nwe_github_pr_lines | nwe_choose "Pull request> " --with-shell "$BASH -c" --header "$toggle: opened by me / all" --bind "$toggle:transform:nwe_github_pr_toggle" --preview 'gh pr view {1}' --preview-window 'down,50%,wrap'
+  local mine review
+  mine="$(nwe_toggle_mine_key)" || return 1
+  review="$(nwe_config .keys.toggle_review_requested ctrl-r)" || return 1
+  export -f nwe_github_pr_list nwe_github_pr_lines nwe_github_pr_all nwe_github_pr_mine nwe_github_pr_review nwe_github_pr_toggle
+  printf '%s\n' "$1" | nwe_github_pr_lines | nwe_choose "Pull request> " --with-shell "$BASH -c" --header "$mine: opened by me / all, $review: review requested / all" --bind "$mine:transform:nwe_github_pr_toggle mine" --bind "$review:transform:nwe_github_pr_toggle review" --preview 'gh pr view {1}' --preview-window 'down,50%,wrap'
 }
 
 nwe_github_pr_resolve() {
@@ -49,11 +50,20 @@ nwe_github_pr_mine() {
   nwe_github_pr_list --author @me 2>/dev/null | nwe_github_pr_lines
 }
 
+nwe_github_pr_review() {
+  nwe_github_pr_list --search review-requested:@me 2>/dev/null | nwe_github_pr_lines
+}
+
 nwe_github_pr_toggle() {
-  if [ "$FZF_PROMPT" = "Pull request> " ]; then
-    printf 'change-prompt(My pull request> )+reload(nwe_github_pr_mine)\n'
-  else
+  local prompt
+  case "$1" in
+  mine) prompt="My pull request> " ;;
+  review) prompt="Review request> " ;;
+  esac
+  if [ "$FZF_PROMPT" = "$prompt" ]; then
     printf 'change-prompt(Pull request> )+reload(nwe_github_pr_all)\n'
+  else
+    printf 'change-prompt(%s)+reload(nwe_github_pr_%s)\n' "$prompt" "$1"
   fi
 }
 

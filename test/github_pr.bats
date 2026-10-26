@@ -32,14 +32,39 @@ setup() {
   [[ "$(gh_calls)" == *"[--author][@me]"* ]]
 }
 
-@test "nwe_github_pr_toggle switches all the open pull requests to the ones opened by me" {
-  FZF_PROMPT="Pull request> " run nwe_github_pr_toggle
+@test "nwe_github_pr_review lists the open pull requests that request my review" {
+  run nwe_github_pr_review
+
+  [ "${#lines[@]}" -eq 2 ]
+  [[ "$(gh_calls)" == *"[--search][review-requested:@me]"* ]]
+}
+
+@test "nwe_github_pr_toggle mine switches all the open pull requests to the ones opened by me" {
+  FZF_PROMPT="Pull request> " run nwe_github_pr_toggle mine
 
   [ "$output" = "change-prompt(My pull request> )+reload(nwe_github_pr_mine)" ]
 }
 
-@test "nwe_github_pr_toggle switches the pull requests opened by me back to all the open pull requests" {
-  FZF_PROMPT="My pull request> " run nwe_github_pr_toggle
+@test "nwe_github_pr_toggle mine switches the pull requests opened by me back to all the open pull requests" {
+  FZF_PROMPT="My pull request> " run nwe_github_pr_toggle mine
+
+  [ "$output" = "change-prompt(Pull request> )+reload(nwe_github_pr_all)" ]
+}
+
+@test "nwe_github_pr_toggle review switches all the open pull requests to the ones that request my review" {
+  FZF_PROMPT="Pull request> " run nwe_github_pr_toggle review
+
+  [ "$output" = "change-prompt(Review request> )+reload(nwe_github_pr_review)" ]
+}
+
+@test "nwe_github_pr_toggle review switches the pull requests opened by me to the ones that request my review" {
+  FZF_PROMPT="My pull request> " run nwe_github_pr_toggle review
+
+  [ "$output" = "change-prompt(Review request> )+reload(nwe_github_pr_review)" ]
+}
+
+@test "nwe_github_pr_toggle review switches the pull requests that request my review back to all the open pull requests" {
+  FZF_PROMPT="Review request> " run nwe_github_pr_toggle review
 
   [ "$output" = "change-prompt(Pull request> )+reload(nwe_github_pr_all)" ]
 }
