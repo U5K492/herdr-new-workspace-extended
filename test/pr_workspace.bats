@@ -50,6 +50,37 @@ setup() {
   [[ "$(fzf_calls)" == *"--preview gh pr view {1}"* ]]
 }
 
+@test "ctrl-o in the PR list toggles the pull requests opened by me" {
+  fzf_will_select github_pr
+  fzf_will_select 34
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls)" == *"--header ctrl-o: opened by me / all --bind ctrl-o:transform:nwe_github_pr_toggle"* ]]
+}
+
+@test "keys.toggle_mine in config.json replaces ctrl-o in the PR list" {
+  write_config '{"keys": {"toggle_mine": "alt-m"}}'
+  fzf_will_select github_pr
+  fzf_will_select 34
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls)" == *"--header alt-m: opened by me / all --bind alt-m:transform:nwe_github_pr_toggle"* ]]
+}
+
+@test "a PR missing from the first list takes its head and title from gh" {
+  source "$REPO_ROOT/lib/ui.sh"
+  source "$REPO_ROOT/lib/repo.sh"
+  source "$REPO_ROOT/sources/github-pr.sh"
+  cd "$REPO"
+
+  run nwe_github_pr_resolve "[]" 34
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "$(printf 'feature-x\n\nPR #34 Add feature X')" ]
+}
+
 @test "escaping the PR list creates nothing" {
   fzf_will_select github_pr
   fzf_will_cancel

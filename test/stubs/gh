@@ -43,10 +43,24 @@ case "$1 $2" in
   fi
   ;;
 "pr list")
-  cat "$GH_STUB_DIR/prs.json"
+  author=""
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = --author ]; then
+      author="$2"
+    fi
+    shift
+  done
+  if [ "$author" = @me ]; then
+    author="${GH_STUB_LOGIN:-octocat}"
+  fi
+  jq --arg author "$author" 'map(select($author == "" or .author.login == $author))' "$GH_STUB_DIR/prs.json"
   ;;
 "pr view")
-  printf 'pr %s\n' "$3"
+  if [ "${4:-}" = --json ]; then
+    jq --argjson number "$3" '.[] | select(.number == $number) | {headRefName, isCrossRepository, title}' "$GH_STUB_DIR/prs.json"
+  else
+    printf 'pr %s\n' "$3"
+  fi
   ;;
 "repo view")
   printf '{"defaultBranchRef":{"name":"%s"}}\n' "${GH_STUB_DEFAULT_BRANCH:-main}"

@@ -12,6 +12,15 @@ issues() {
 EOF
 }
 
+prs() {
+  cat <<'EOF'
+[
+  {"number": 45, "title": "Cache GitHub API responses", "headRefName": "feat/cache-api", "isCrossRepository": false, "author": {"login": "alice"}},
+  {"number": 44, "title": "Fix the flaky login test", "headRefName": "fix/flaky-login", "isCrossRepository": false, "author": {"login": "bob"}}
+]
+EOF
+}
+
 case "$1 $2" in
 "api graphql")
   issues | jq '{data: {repository: {issues: {nodes: map(.labels = {nodes: .labels}), pageInfo: {hasNextPage: false, endCursor: null}}}}}'
@@ -32,14 +41,13 @@ case "$1 $2" in
   esac
   ;;
 "pr list")
-  cat <<'EOF'
-[
-  {"number": 45, "title": "Cache GitHub API responses", "headRefName": "feat/cache-api", "isCrossRepository": false, "author": {"login": "alice"}},
-  {"number": 44, "title": "Fix the flaky login test", "headRefName": "fix/flaky-login", "isCrossRepository": false, "author": {"login": "bob"}}
-]
-EOF
+  prs
   ;;
 "pr view")
+  if [ "${4:-}" = --json ]; then
+    prs | jq --argjson number "$3" '.[] | select(.number == $number)'
+    exit
+  fi
   case "$3" in
   45) printf 'Cache GitHub API responses #45\nOpen • alice wants to merge 1 commit into main from feat/cache-api\n\n  Keep responses for 60 seconds so repeated lookups\n  do not hit the rate limit.\n' ;;
   *) printf 'Fix the flaky login test #44\nOpen • bob wants to merge 1 commit into main from fix/flaky-login\n\n  Wait for the session cookie before asserting.\n' ;;

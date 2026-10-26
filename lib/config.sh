@@ -11,3 +11,7 @@ nwe_config() {
   fi
   printf '%s\n' "${value:-$default}"
 }
+
+nwe_toggle_mine_key() {
+  nwe_config '.keys.toggle_mine // .keys.toggle_assigned' ctrl-o
+}
