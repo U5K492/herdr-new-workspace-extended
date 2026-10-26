@@ -17,3 +17,11 @@ nwe_latest_default_commit() {
   git fetch --quiet origin "$branch" || return 1
   git rev-parse --verify --quiet "refs/remotes/origin/$branch^{commit}"
 }
+
+nwe_track_origin_branch() {
+  local branch="$1"
+  git fetch --quiet origin "$branch" || return 1
+  if ! git show-ref --verify --quiet "refs/heads/$branch"; then
+    git branch --quiet --track "$branch" "refs/remotes/origin/$branch" || return 1
+  fi
+}

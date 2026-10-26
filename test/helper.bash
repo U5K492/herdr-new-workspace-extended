@@ -10,6 +10,7 @@ setup_stubs() {
   : >"$HERDR_STUB_DIR/calls"
   : >"$GH_STUB_DIR/calls"
   cp "$BATS_TEST_DIRNAME/fixtures/issues.json" "$GH_STUB_DIR/issues.json"
+  cp "$BATS_TEST_DIRNAME/fixtures/prs.json" "$GH_STUB_DIR/prs.json"
   export PATH="$BATS_TEST_DIRNAME/stubs:$PATH"
   export HERDR_BIN_PATH="$BATS_TEST_DIRNAME/stubs/herdr"
 }
@@ -28,7 +29,15 @@ setup_git_repo() {
   git -C "$upstream" commit -q --allow-empty -m second
   git -C "$upstream" push -q origin main
   REPO="$(cd "$BATS_TEST_TMPDIR/repo" && pwd -P)"
+  UPSTREAM="$upstream"
   ORIGIN_MAIN_SHA="$(git -C "$upstream" rev-parse HEAD)"
+}
+
+push_origin_branch() {
+  git -C "$UPSTREAM" switch -q -c "$1" main
+  git -C "$UPSTREAM" commit -q --allow-empty -m "$1"
+  git -C "$UPSTREAM" push -q origin "$1"
+  git -C "$UPSTREAM" switch -q main
 }
 
 fzf_will_select() {
@@ -60,7 +69,7 @@ gh_calls() {
 }
 
 run_picker() {
-  run "${NWE_TEST_BASH:-bash}" "$REPO_ROOT/bin/pick.sh"
+  run "${NWE_TEST_BASH:-bash}" "$REPO_ROOT/bin/pick.sh" </dev/null
 }
 
 run_picker_from() {

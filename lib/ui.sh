@@ -19,3 +19,8 @@ nwe_input() {
   fi
   printf '%s\n' "${query%%$'\n'*}"
 }
+
+nwe_notice() {
+  printf '%s\n\nPress any key to close.\n' "$1" >&2
+  read -r -s -n 1 _ || true
+}

@@ -4,9 +4,9 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 
 - **With a name**: create a regular workspace, like the built-in command
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch
-- **From a GitHub pull request** (planned): pick an open pull request and open a worktree workspace on its branch
+- **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Pull requests from forks are not supported yet
 
-> Status: early development. "With a name" and "From a GitHub issue" work today.
+> Status: early development. All three ways work, but opening a branch that already has a worktree does not yet.
 
 ## Requirements
 
@@ -53,7 +53,7 @@ mise install
 herdr plugin link "$PWD"
 bats test
 NWE_TEST_BASH=/bin/bash bats test/*_workspace.bats
-shellcheck bin/*.sh lib/*.sh test/stubs/*
+shellcheck bin/*.sh lib/*.sh sources/*.sh test/stubs/*
 ```
 
 `mise install` installs the versions of bats and shellcheck pinned in `mise.toml`. Without mise, use `brew install bats-core shellcheck`.
@@ -67,6 +67,7 @@ Functions in `lib/` mostly run inside command substitutions, where bash turns `s
 - `bin/open-picker.sh`: the `new` action. Opens the picker popup and passes the invocation context to it
 - `bin/pick.sh`: runs inside the popup
 - `lib/`: functions sourced by `bin/pick.sh`
+- `sources/`: where a worktree workspace can start from. The menu key of a source is its name, and `bin/pick.sh` calls three functions it defines: `nwe_<name>_items` fetches the candidates, `nwe_<name>_choose` lets you pick one with fzf, and `nwe_<name>_resolve` prints the branch, the base (empty to let herdr decide) and the label on three lines
 - `test/`: bats specs. `test/stubs/` fakes fzf, gh and herdr, and `test/fixtures/` holds the JSON the gh stub returns. git is real: each spec builds a throwaway origin and clone
 
 ### The `nwe` prefix

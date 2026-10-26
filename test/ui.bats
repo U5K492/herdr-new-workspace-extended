@@ -47,3 +47,11 @@ setup() {
   [ "$status" -ne 0 ]
   [ -z "$output" ]
 }
+
+@test "nwe_notice shows the message and how to close" {
+  run nwe_notice "Something happened." </dev/null
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Something happened."* ]]
+  [[ "$output" == *"Press any key to close."* ]]
+}

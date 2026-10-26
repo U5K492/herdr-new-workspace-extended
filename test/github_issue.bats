@@ -1,6 +1,6 @@
 setup() {
   load helper
-  source "$REPO_ROOT/lib/issue.sh"
+  source "$REPO_ROOT/sources/github-issue.sh"
 }
 
 @test "nwe_slug lowercases the title and replaces symbols with hyphens" {
@@ -27,27 +27,21 @@ setup() {
   [ "$output" = "" ]
 }
 
-@test "nwe_issue_branch joins the number and the slug" {
-  run nwe_issue_branch 12 "Add login page"
+@test "nwe_github_issue_branch joins the number and the slug" {
+  run nwe_github_issue_branch 12 "Add login page"
 
   [ "$output" = 12-add-login-page ]
 }
 
-@test "nwe_issue_branch falls back to issue-<number> when the slug is empty" {
-  run nwe_issue_branch 15 "ログイン画面を直す"
+@test "nwe_github_issue_branch falls back to issue-<number> when the slug is empty" {
+  run nwe_github_issue_branch 15 "ログイン画面を直す"
 
   [ "$output" = issue-15 ]
 }
 
-@test "nwe_issue_lines lists the number as the key and shows the title with labels" {
-  run nwe_issue_lines <"$BATS_TEST_DIRNAME/fixtures/issues.json"
+@test "nwe_github_issue_lines lists the number as the key and shows the title with labels" {
+  run nwe_github_issue_lines <"$BATS_TEST_DIRNAME/fixtures/issues.json"
 
   [ "${lines[0]}" = "$(printf '12\t#12 Add login page  [enhancement, ui]')" ]
   [ "${lines[1]}" = "$(printf '15\t#15 ログイン画面を直す')" ]
-}
-
-@test "nwe_issue_title finds the title by number" {
-  run nwe_issue_title 15 <"$BATS_TEST_DIRNAME/fixtures/issues.json"
-
-  [ "$output" = "ログイン画面を直す" ]
 }

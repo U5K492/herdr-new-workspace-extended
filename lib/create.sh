@@ -14,6 +14,17 @@ nwe_create_named_workspace() {
 }
 
 nwe_create_worktree_workspace() {
-  local repo="$1" branch="$2" base="$3" label="$4"
-  nwe_herdr worktree create --cwd "$repo" --branch "$branch" --base "$base" --label "$label" --focus >/dev/null
+  local repo="$1" branch base label
+  {
+    IFS= read -r branch
+    IFS= read -r base
+    IFS= read -r label
+  } <<EOT
+$2
+EOT
+  if [ -n "$base" ]; then
+    nwe_herdr worktree create --cwd "$repo" --branch "$branch" --base "$base" --label "$label" --focus >/dev/null
+  else
+    nwe_herdr worktree create --cwd "$repo" --branch "$branch" --label "$label" --focus >/dev/null
+  fi
 }

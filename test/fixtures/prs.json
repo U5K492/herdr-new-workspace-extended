@@ -1,0 +1,16 @@
+[
+  {
+    "number": 34,
+    "title": "Add feature X",
+    "headRefName": "feature-x",
+    "isCrossRepository": false,
+    "author": { "login": "alice" }
+  },
+  {
+    "number": 35,
+    "title": "Fix typo",
+    "headRefName": "patch-1",
+    "isCrossRepository": true,
+    "author": { "login": "bob" }
+  }
+]
