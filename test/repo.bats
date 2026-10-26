@@ -87,3 +87,17 @@ setup() {
 
   [ "$status" -ne 0 ]
 }
+
+@test "nwe_has_origin succeeds for a clone" {
+  run nwe_has_origin "$REPO"
+
+  [ "$status" -eq 0 ]
+}
+
+@test "nwe_has_origin fails without an origin remote" {
+  git -C "$REPO" remote remove origin
+
+  run nwe_has_origin "$REPO"
+
+  [ "$status" -ne 0 ]
+}

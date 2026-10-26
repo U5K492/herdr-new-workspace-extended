@@ -1,7 +1,14 @@
 # shellcheck shell=bash
 
+nwe_github_issue_available() {
+  nwe_has_origin "$1"
+}
+
 nwe_github_issue_items() {
-  gh issue list --state open --limit 100 --json number,title,labels
+  gh issue list --state open --limit 100 --json number,title,labels || {
+    nwe_notice "gh could not list the open issues."
+    return 1
+  }
 }
 
 nwe_github_issue_choose() {
@@ -13,7 +20,10 @@ nwe_github_issue_resolve() {
   title="$(printf '%s\n' "$1" | jq -r --argjson number "$number" '.[] | select(.number == $number) | .title')" || return 1
   branch="$(nwe_input "Branch> " "$(nwe_github_issue_branch "$number" "$title")")" || return 1
   [ -n "$branch" ] || return 1
-  base="$(nwe_latest_default_commit)" || return 1
+  base="$(nwe_latest_default_commit)" || {
+    nwe_notice "Could not fetch the latest default branch from origin."
+    return 1
+  }
   printf '%s\n%s\n%s\n' "$branch" "$base" "#$number $title"
 }
 

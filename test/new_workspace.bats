@@ -1,6 +1,7 @@
 setup() {
   load helper
   setup_stubs
+  setup_git_repo
 }
 
 @test "the action opens the picker popup with the invocation context" {
@@ -16,7 +17,7 @@ setup() {
   fzf_will_select name
   fzf_will_type foo
 
-  run_picker
+  run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
   [ "$(herdr_calls)" = '[workspace][create][--label][foo][--focus]' ]
@@ -26,7 +27,7 @@ setup() {
   fzf_will_select name
   fzf_will_type "my feature"
 
-  run_picker
+  run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
   [ "$(herdr_calls)" = '[workspace][create][--label][my feature][--focus]' ]
@@ -36,7 +37,7 @@ setup() {
   fzf_will_select name
   fzf_will_type ""
 
-  run_picker
+  run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
   [ "$(herdr_calls)" = '[workspace][create][--focus]' ]
@@ -45,7 +46,7 @@ setup() {
 @test "escaping the menu creates nothing" {
   fzf_will_cancel
 
-  run_picker
+  run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
   [ -z "$(herdr_calls)" ]
@@ -55,7 +56,7 @@ setup() {
   fzf_will_select name
   fzf_will_cancel
 
-  run_picker
+  run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
   [ -z "$(herdr_calls)" ]

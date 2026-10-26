@@ -1,7 +1,14 @@
 # shellcheck shell=bash
 
+nwe_github_pr_available() {
+  nwe_has_origin "$1"
+}
+
 nwe_github_pr_items() {
-  gh pr list --state open --limit 100 --json number,title,headRefName,isCrossRepository,author
+  gh pr list --state open --limit 100 --json number,title,headRefName,isCrossRepository,author || {
+    nwe_notice "gh could not list the open pull requests."
+    return 1
+  }
 }
 
 nwe_github_pr_choose() {
@@ -17,7 +24,10 @@ nwe_github_pr_resolve() {
   fi
   head="$(printf '%s\n' "$pr" | jq -r .headRefName)" || return 1
   title="$(printf '%s\n' "$pr" | jq -r .title)" || return 1
-  nwe_track_origin_branch "$head" || return 1
+  nwe_track_origin_branch "$head" || {
+    nwe_notice "Could not fetch $head from origin."
+    return 1
+  }
   printf '%s\n%s\n%s\n' "$head" "" "PR #$number $title"
 }
 

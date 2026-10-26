@@ -31,3 +31,7 @@ nwe_has_worktree() {
   list="$(git -C "$repo" worktree list --porcelain)" || return 1
   grep -Fqx "branch refs/heads/$branch" <<<"$list"
 }
+
+nwe_has_origin() {
+  git -C "$1" remote get-url origin >/dev/null 2>&1
+}
