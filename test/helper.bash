@@ -4,7 +4,8 @@ setup_stubs() {
   export FZF_STUB_DIR="$BATS_TEST_TMPDIR/fzf"
   export HERDR_STUB_DIR="$BATS_TEST_TMPDIR/herdr"
   export GH_STUB_DIR="$BATS_TEST_TMPDIR/gh"
-  mkdir -p "$FZF_STUB_DIR" "$HERDR_STUB_DIR" "$GH_STUB_DIR"
+  export HERDR_PLUGIN_CONFIG_DIR="$BATS_TEST_TMPDIR/config"
+  mkdir -p "$FZF_STUB_DIR" "$HERDR_STUB_DIR" "$GH_STUB_DIR" "$HERDR_PLUGIN_CONFIG_DIR"
   : >"$FZF_STUB_DIR/queue"
   : >"$FZF_STUB_DIR/calls"
   : >"$HERDR_STUB_DIR/calls"
@@ -56,12 +57,20 @@ fzf_will_cancel() {
   printf 'cancel\n' >>"$FZF_STUB_DIR/queue"
 }
 
+fzf_will_fail() {
+  printf 'fail\t%s\n' "$1" >>"$FZF_STUB_DIR/queue"
+}
+
 fzf_calls() {
   cat "$FZF_STUB_DIR/calls"
 }
 
 herdr_calls() {
   cat "$HERDR_STUB_DIR/calls"
+}
+
+write_config() {
+  printf '%s\n' "$1" >"$HERDR_PLUGIN_CONFIG_DIR/config.json"
 }
 
 gh_calls() {

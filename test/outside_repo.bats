@@ -48,6 +48,18 @@ setup() {
   [ -z "$(herdr_calls)" ]
 }
 
+@test "when gh fails to read the chosen issue, the picker shows the error, waits for a key and creates nothing" {
+  export GH_STUB_FAIL="issue view"
+  fzf_will_select github_issue
+  fzf_will_select 12
+
+  run_picker_from "$REPO"
+
+  [[ "$output" == *"HTTP 401: Bad credentials"* ]]
+  [[ "$output" == *"gh could not read issue #12."* ]]
+  [ -z "$(herdr_calls)" ]
+}
+
 @test "when gh fails to list PRs, the picker shows the error, waits for a key and creates nothing" {
   export GH_STUB_FAIL="pr list"
   fzf_will_select github_pr

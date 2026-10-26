@@ -48,6 +48,16 @@ setup() {
   [ -z "$output" ]
 }
 
+@test "nwe_menu shows the error from fzf and fails" {
+  fzf_will_fail foo
+
+  run nwe_menu "$(printf 'name\tWith a name')" </dev/null
+
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"unsupported key: foo"* ]]
+  [[ "$output" == *"fzf exited with an error."* ]]
+}
+
 @test "nwe_notice shows the message and how to close" {
   run nwe_notice "Something happened." </dev/null
 

@@ -5,19 +5,25 @@ nwe_github_issue_available() {
 }
 
 nwe_github_issue_items() {
-  gh issue list --state open --limit 100 --json number,title,labels || {
+  nwe_github_issue_list || {
     nwe_notice "gh could not list the open issues."
     return 1
   }
 }
 
 nwe_github_issue_choose() {
-  nwe_choose "Issue> " "$(printf '%s\n' "$1" | nwe_github_issue_lines)" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap'
+  local toggle
+  toggle="$(nwe_config .keys.toggle_assigned ctrl-o)" || return 1
+  export -f nwe_github_issue_list nwe_github_issue_lines nwe_github_issue_toggle
+  nwe_choose "Issue> " "$(printf '%s\n' "$1" | nwe_github_issue_lines)" --with-shell "$BASH -c" --header "$toggle: assigned to me / all" --bind "$toggle:transform:nwe_github_issue_toggle" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap'
 }
 
 nwe_github_issue_resolve() {
   local number="$2" title branch base
-  title="$(printf '%s\n' "$1" | jq -r --argjson number "$number" '.[] | select(.number == $number) | .title')" || return 1
+  title="$(gh issue view "$number" --json title | jq -r .title)" || {
+    nwe_notice "gh could not read issue #$number."
+    return 1
+  }
   branch="$(nwe_input "Branch> " "$(nwe_github_issue_branch "$number" "$title")")" || return 1
   [ -n "$branch" ] || return 1
   base="$(nwe_latest_default_commit)" || {
@@ -25,6 +31,19 @@ nwe_github_issue_resolve() {
     return 1
   }
   printf '%s\n%s\n%s\n' "$branch" "$base" "#$number $title"
+}
+
+# shellcheck disable=SC2120
+nwe_github_issue_list() {
+  gh issue list --state open --limit 100 --json number,title,labels "$@"
+}
+
+nwe_github_issue_toggle() {
+  if [ "$FZF_PROMPT" = "Issue> " ]; then
+    printf '%s\n' 'change-prompt(My issue> )+reload(nwe_github_issue_list --assignee @me | nwe_github_issue_lines)'
+  else
+    printf '%s\n' 'change-prompt(Issue> )+reload(nwe_github_issue_list | nwe_github_issue_lines)'
+  fi
 }
 
 nwe_github_issue_lines() {
