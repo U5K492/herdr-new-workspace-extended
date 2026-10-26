@@ -60,14 +60,14 @@ setup() {
   [[ "$(fzf_calls)" == *"--preview gh issue view {1}"* ]]
 }
 
-@test "ctrl-a in the issue list toggles the issues assigned to me" {
+@test "ctrl-o in the issue list toggles the issues assigned to me" {
   fzf_will_select github_issue
   fzf_will_select 12
   fzf_will_accept
 
   run_picker_from "$REPO"
 
-  [[ "$(fzf_calls)" == *"--header ctrl-a: assigned to me / all --bind ctrl-a:transform:nwe_github_issue_toggle"* ]]
+  [[ "$(fzf_calls)" == *"--header ctrl-o: assigned to me / all --bind ctrl-o:transform:nwe_github_issue_toggle"* ]]
 }
 
 @test "an issue missing from the first list takes its title from gh" {
