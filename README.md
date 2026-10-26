@@ -3,7 +3,7 @@
 A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the new workspace key and pick how to start:
 
 - **With a name**: create a regular workspace, like the built-in command
-- **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. Press `ctrl-o` in the list to show only the issues assigned to you, and again to show all of them. The key can be changed in [Configuration](#configuration)
+- **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. The list opens with the newest 100 issues and keeps loading the rest, 100 at a time, while you search. Press `ctrl-o` in the list to show only the issues assigned to you, and again to show all of them. The key and the number of issues to load can be changed in [Configuration](#configuration)
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Pull requests from forks are not supported yet
 
 ![Opening a worktree workspace from an issue, then from a pull request](demo/demo.gif)
@@ -66,11 +66,15 @@ Every setting is optional. Without the file, the picker uses the defaults.
 {
   "keys": {
     "toggle_assigned": "ctrl-o"
+  },
+  "limits": {
+    "issues": 500
   }
 }
 ```
 
 - `keys.toggle_assigned`: the key that switches the issue list between all open issues and the ones assigned to you. Defaults to `ctrl-o`. Write it as fzf's `--bind` does, such as `ctrl-t` or `alt-m`. If fzf does not accept the key, the picker shows fzf's error before closing
+- `limits.issues`: the most issues the issue list loads, in both the full list and the one assigned to you. Without it, the list loads every open issue. Loading takes about a second per 100 issues, and the rest stops loading once you pick one, so set it only to keep a large repository from spending API calls
 
 ## Development
 

@@ -1,9 +1,9 @@
 # shellcheck shell=bash
 
 nwe_choose() {
-  local prompt="$1" items="$2" selection status=0
-  shift 2
-  selection="$(printf '%s\n' "$items" | fzf --delimiter "$(printf '\t')" --with-nth 2.. --prompt "$prompt" --layout reverse "$@")" || status=$?
+  local prompt="$1" selection status=0
+  shift
+  selection="$(fzf --delimiter "$(printf '\t')" --with-nth 2.. --prompt "$prompt" --layout reverse "$@")" || status=$?
   if [ "$status" -eq 2 ]; then
     nwe_notice "fzf exited with an error."
     return 1
@@ -13,7 +13,7 @@ nwe_choose() {
 }
 
 nwe_menu() {
-  nwe_choose "New workspace> " "$1"
+  printf '%s\n' "$1" | nwe_choose "New workspace> "
 }
 
 nwe_input() {
