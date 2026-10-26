@@ -8,7 +8,9 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 
 Outside a git repository, or in one without an `origin` remote, the picker skips the menu and asks for a name.
 
-> Status: early development. All three ways work. If the chosen branch already has a worktree, the picker opens it instead of creating another.
+If the chosen branch already has a worktree, the picker opens it instead of creating another.
+
+> Status: 0.1.0. Tested with herdr 0.9.5 on macOS. Linux should work but has not been tried.
 
 ## Requirements
 
@@ -57,6 +59,8 @@ bats test
 NWE_TEST_BASH=/bin/bash bats test
 shellcheck bin/*.sh lib/*.sh sources/*.sh test/stubs/*
 ```
+
+If you installed the plugin from GitHub, run `herdr plugin uninstall u5k492.new-workspace-extended` before linking your clone.
 
 `mise install` installs the versions of bats and shellcheck pinned in `mise.toml`. Without mise, use `brew install bats-core shellcheck`.
 
