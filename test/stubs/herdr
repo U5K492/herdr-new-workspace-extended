@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+{
+  printf '[%s]' "$@"
+  printf '\n'
+} >>"$HERDR_STUB_DIR/calls"
+printf '{"id":"stub","result":{"type":"ok"}}\n'

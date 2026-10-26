@@ -1,0 +1,20 @@
+id = "u5k492.new-workspace-extended"
+name = "New Workspace Extended"
+version = "0.1.0"
+min_herdr_version = "0.9.5"
+description = "Start a workspace from a GitHub issue or pull request, or just from a name."
+platforms = ["linux", "macos"]
+
+[[actions]]
+id = "new"
+title = "New workspace (extended)"
+contexts = ["workspace"]
+command = ["bash", "bin/open-picker.sh"]
+
+[[panes]]
+id = "picker"
+title = "New workspace"
+placement = "popup"
+width = "60%"
+height = "50%"
+command = ["bash", "bin/pick.sh"]
