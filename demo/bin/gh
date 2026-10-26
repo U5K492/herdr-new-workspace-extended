@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-case "$1 $2" in
-"issue list")
+issues() {
   cat <<'EOF'
 [
   {"number": 42, "title": "Add a dark mode toggle", "labels": [{"name": "enhancement"}]},
@@ -11,8 +10,17 @@ case "$1 $2" in
   {"number": 27, "title": "Support Linux keyrings", "labels": []}
 ]
 EOF
+}
+
+case "$1 $2" in
+"issue list")
+  issues
   ;;
 "issue view")
+  if [ "${4:-}" = --json ]; then
+    issues | jq --argjson number "$3" '.[] | select(.number == $number)'
+    exit
+  fi
   case "$3" in
   42) printf 'Add a dark mode toggle #42\nOpen • 3 comments\nLabels: enhancement\n\n  Let users switch themes from the settings page\n  instead of editing the config file.\n' ;;
   38) printf 'Crash when the config file is empty #38\nOpen • 1 comment\nLabels: bug\n\n  Starting the app with an empty config.toml panics\n  while reading the theme.\n' ;;

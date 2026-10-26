@@ -16,7 +16,11 @@ case "$1 $2" in
   cat "$GH_STUB_DIR/issues.json"
   ;;
 "issue view")
-  printf 'issue %s\n' "$3"
+  if [ "${4:-}" = --json ]; then
+    jq --argjson number "$3" '.[] | select(.number == $number)' "$GH_STUB_DIR/issues.json"
+  else
+    printf 'issue %s\n' "$3"
+  fi
   ;;
 "pr list")
   cat "$GH_STUB_DIR/prs.json"

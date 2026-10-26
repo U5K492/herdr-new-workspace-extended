@@ -3,7 +3,7 @@
 A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the new workspace key and pick how to start:
 
 - **With a name**: create a regular workspace, like the built-in command
-- **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch
+- **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. Press `ctrl-a` in the list to show only the issues assigned to you, and again to show all of them
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Pull requests from forks are not supported yet
 
 ![Opening a worktree workspace from an issue, then from a pull request](demo/demo.gif)

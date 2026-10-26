@@ -60,6 +60,30 @@ setup() {
   [[ "$(fzf_calls)" == *"--preview gh issue view {1}"* ]]
 }
 
+@test "ctrl-a in the issue list toggles the issues assigned to me" {
+  fzf_will_select github_issue
+  fzf_will_select 12
+  fzf_will_accept
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls)" == *"--header ctrl-a: assigned to me / all --bind ctrl-a:transform:nwe_github_issue_toggle"* ]]
+}
+
+@test "an issue missing from the first list takes its title from gh" {
+  source "$REPO_ROOT/lib/ui.sh"
+  source "$REPO_ROOT/lib/repo.sh"
+  source "$REPO_ROOT/sources/github-issue.sh"
+  fzf_will_accept
+  cd "$REPO"
+
+  run nwe_github_issue_resolve "[]" 12
+
+  [ "$status" -eq 0 ]
+  [ "${lines[0]}" = 12-add-login-page ]
+  [ "${lines[2]}" = "#12 Add login page" ]
+}
+
 @test "escaping the issue list creates nothing" {
   fzf_will_select github_issue
   fzf_will_cancel
