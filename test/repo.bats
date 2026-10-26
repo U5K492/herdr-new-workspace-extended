@@ -65,3 +65,25 @@ setup() {
   [ "$status" -eq 0 ]
   [ "$output" = "$ORIGIN_MAIN_SHA" ]
 }
+
+@test "nwe_has_worktree finds a linked worktree of the branch" {
+  git -C "$REPO" worktree add -q "$BATS_TEST_TMPDIR/child" -b child
+
+  run nwe_has_worktree "$REPO" child
+
+  [ "$status" -eq 0 ]
+}
+
+@test "nwe_has_worktree counts the main checkout" {
+  run nwe_has_worktree "$REPO" main
+
+  [ "$status" -eq 0 ]
+}
+
+@test "nwe_has_worktree fails for a branch without a worktree" {
+  git -C "$REPO" branch -q lonely
+
+  run nwe_has_worktree "$REPO" lonely
+
+  [ "$status" -ne 0 ]
+}

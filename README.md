@@ -6,7 +6,7 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Pull requests from forks are not supported yet
 
-> Status: early development. All three ways work, but opening a branch that already has a worktree does not yet.
+> Status: early development. All three ways work. If the chosen branch already has a worktree, the picker opens it instead of creating another.
 
 ## Requirements
 
@@ -52,7 +52,7 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 mise install
 herdr plugin link "$PWD"
 bats test
-NWE_TEST_BASH=/bin/bash bats test/*_workspace.bats
+NWE_TEST_BASH=/bin/bash bats test
 shellcheck bin/*.sh lib/*.sh sources/*.sh test/stubs/*
 ```
 

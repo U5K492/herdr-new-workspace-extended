@@ -26,4 +26,4 @@ cd "$repo"
 items="$("nwe_${choice}_items")"
 key="$("nwe_${choice}_choose" "$items")" || exit 0
 target="$("nwe_${choice}_resolve" "$items" "$key")" || exit 0
-nwe_create_worktree_workspace "$repo" "$target"
+nwe_open_worktree_workspace "$repo" "$target"

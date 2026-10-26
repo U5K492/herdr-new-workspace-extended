@@ -25,3 +25,9 @@ nwe_track_origin_branch() {
     git branch --quiet --track "$branch" "refs/remotes/origin/$branch" || return 1
   fi
 }
+
+nwe_has_worktree() {
+  local repo="$1" branch="$2" list
+  list="$(git -C "$repo" worktree list --porcelain)" || return 1
+  grep -Fqx "branch refs/heads/$branch" <<<"$list"
+}
