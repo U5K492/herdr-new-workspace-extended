@@ -1,0 +1,16 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "nodes": [
+          {
+            "number": 7,
+            "title": "Old issue",
+            "labels": { "nodes": [] }
+          }
+        ],
+        "pageInfo": { "hasNextPage": false, "endCursor": "cursor-2" }
+      }
+    }
+  }
+}

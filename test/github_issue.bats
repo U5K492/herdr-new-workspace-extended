@@ -1,5 +1,8 @@
 setup() {
   load helper
+  setup_stubs
+  source "$REPO_ROOT/lib/ui.sh"
+  source "$REPO_ROOT/lib/config.sh"
   source "$REPO_ROOT/sources/github-issue.sh"
 }
 
@@ -40,28 +43,88 @@ setup() {
 }
 
 @test "nwe_github_issue_lines lists the number as the key and shows the title with labels" {
-  run nwe_github_issue_lines <"$BATS_TEST_DIRNAME/fixtures/issues.json"
+  run nwe_github_issue_lines <"$BATS_TEST_DIRNAME/fixtures/issues-page-1.json"
 
   [ "${lines[0]}" = "$(printf '12\t#12 Add login page  [enhancement, ui]')" ]
   [ "${lines[1]}" = "$(printf '15\t#15 ログイン画面を直す')" ]
 }
 
-@test "nwe_github_issue_list passes extra flags to gh issue list" {
-  setup_stubs
+@test "nwe_github_issue_lines reads one page after another" {
+  run nwe_github_issue_lines < <(cat "$BATS_TEST_DIRNAME"/fixtures/issues-page-1.json "$BATS_TEST_DIRNAME"/fixtures/issues-page-2.json)
 
-  run nwe_github_issue_list --assignee @me
+  [ "${#lines[@]}" -eq 3 ]
+  [ "${lines[2]}" = "$(printf '7\t#7 Old issue')" ]
+}
 
-  [ "$(gh_calls)" = "[issue][list][--state][open][--limit][100][--json][number,title,labels][--assignee][@me]" ]
+@test "nwe_github_issue_stream lists the first page, then fetches the rest from its end cursor" {
+  run nwe_github_issue_stream "$(cat "$BATS_TEST_DIRNAME/fixtures/issues-page-1.json")"
+
+  [ "${lines[0]}" = "$(printf '12\t#12 Add login page  [enhancement, ui]')" ]
+  [ "${lines[2]}" = "$(printf '7\t#7 Old issue')" ]
+  [[ "$(gh_calls)" == "[api][graphql]"*"[--paginate][-f][endCursor=cursor-1][--jq]"* ]]
+}
+
+@test "nwe_github_issue_stream fetches nothing more when the first page is the last" {
+  run nwe_github_issue_stream "$(cat "$BATS_TEST_DIRNAME/fixtures/issues-page-2.json")"
+
+  [ "$output" = "$(printf '7\t#7 Old issue')" ]
+  [ -z "$(gh_calls)" ]
+}
+
+@test "nwe_github_issue_all lists the open issues on every page" {
+  run nwe_github_issue_all
+
+  [ "${#lines[@]}" -eq 3 ]
+  [[ "$(gh_calls)" == "[api][graphql]"*"[--paginate][--jq]"* ]]
+}
+
+@test "nwe_github_issue_all stops at the limit" {
+  run nwe_github_issue_all 2
+
+  [ "${#lines[@]}" -eq 2 ]
+}
+
+@test "nwe_github_issue_mine lists the open issues assigned to the signed-in user" {
+  export GH_STUB_LOGIN=alice
+
+  run nwe_github_issue_mine
+
+  [ "${#lines[@]}" -eq 3 ]
+  [[ "$(gh_calls)" == *"[--paginate][-f][filterBy[assignee]=alice][--jq]"* ]]
 }
 
 @test "nwe_github_issue_toggle switches all the open issues to the ones assigned to me" {
-  FZF_PROMPT="Issue> " run nwe_github_issue_toggle
+  FZF_PROMPT="Issue> " run nwe_github_issue_toggle 50
 
-  [ "$output" = "change-prompt(My issue> )+reload(nwe_github_issue_list --assignee @me | nwe_github_issue_lines)" ]
+  [ "$output" = "change-prompt(My issue> )+reload(nwe_github_issue_mine 50)" ]
 }
 
 @test "nwe_github_issue_toggle switches the issues assigned to me back to all the open issues" {
   FZF_PROMPT="My issue> " run nwe_github_issue_toggle
 
-  [ "$output" = "change-prompt(Issue> )+reload(nwe_github_issue_list | nwe_github_issue_lines)" ]
+  [ "$output" = "change-prompt(Issue> )+reload(nwe_github_issue_all )" ]
+}
+
+@test "nwe_github_issue_limit is empty without limits.issues" {
+  run nwe_github_issue_limit
+
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}
+
+@test "nwe_github_issue_limit reads limits.issues from config.json" {
+  write_config '{"limits": {"issues": 300}}'
+
+  run nwe_github_issue_limit
+
+  [ "$output" = 300 ]
+}
+
+@test "nwe_github_issue_limit shows an error for a limit that is not a positive whole number" {
+  write_config '{"limits": {"issues": 0}}'
+
+  run nwe_github_issue_limit </dev/null
+
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"limits.issues in config.json must be a positive whole number, not 0."* ]]
 }

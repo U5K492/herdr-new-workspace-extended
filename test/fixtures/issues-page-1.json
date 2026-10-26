@@ -1,0 +1,21 @@
+{
+  "data": {
+    "repository": {
+      "issues": {
+        "nodes": [
+          {
+            "number": 12,
+            "title": "Add login page",
+            "labels": { "nodes": [{ "name": "enhancement" }, { "name": "ui" }] }
+          },
+          {
+            "number": 15,
+            "title": "ログイン画面を直す",
+            "labels": { "nodes": [] }
+          }
+        ],
+        "pageInfo": { "hasNextPage": true, "endCursor": "cursor-1" }
+      }
+    }
+  }
+}

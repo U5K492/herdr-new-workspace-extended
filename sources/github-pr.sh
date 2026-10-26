@@ -12,7 +12,7 @@ nwe_github_pr_items() {
 }
 
 nwe_github_pr_choose() {
-  nwe_choose "Pull request> " "$(printf '%s\n' "$1" | nwe_github_pr_lines)" --preview 'gh pr view {1}' --preview-window 'down,50%,wrap'
+  printf '%s\n' "$1" | nwe_github_pr_lines | nwe_choose "Pull request> " --preview 'gh pr view {1}' --preview-window 'down,50%,wrap'
 }
 
 nwe_github_pr_resolve() {

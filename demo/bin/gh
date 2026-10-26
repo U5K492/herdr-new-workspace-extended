@@ -13,8 +13,11 @@ EOF
 }
 
 case "$1 $2" in
-"issue list")
-  issues
+"api graphql")
+  issues | jq '{data: {repository: {issues: {nodes: map(.labels = {nodes: .labels}), pageInfo: {hasNextPage: false, endCursor: null}}}}}'
+  ;;
+"api user")
+  printf 'demo\n'
   ;;
 "issue view")
   if [ "${4:-}" = --json ]; then

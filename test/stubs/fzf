@@ -6,6 +6,7 @@ count_file="$FZF_STUB_DIR/count"
 n=$(($(cat "$count_file" 2>/dev/null || echo 0) + 1))
 echo "$n" >"$count_file"
 printf '%s\n' "$*" >>"$FZF_STUB_DIR/calls"
+printf '%s\n' "$input" >"$FZF_STUB_DIR/input.$n"
 
 line="$(sed -n "${n}p" "$FZF_STUB_DIR/queue")"
 action="${line%%$'\t'*}"

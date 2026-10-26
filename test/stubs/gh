@@ -12,12 +12,32 @@ if [ "${GH_STUB_FAIL:-}" = "$1 $2" ]; then
 fi
 
 case "$1 $2" in
-"issue list")
-  cat "$GH_STUB_DIR/issues.json"
+"api graphql")
+  args=" $* "
+  filter=.
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = --jq ]; then
+      filter="$2"
+    fi
+    shift
+  done
+  {
+    if [[ "$args" == *" endCursor="* ]]; then
+      cat "$GH_STUB_DIR/issues-page-2.json"
+    else
+      cat "$GH_STUB_DIR/issues-page-1.json"
+      if [[ "$args" == *" --paginate "* ]]; then
+        cat "$GH_STUB_DIR/issues-page-2.json"
+      fi
+    fi
+  } | jq -r "$filter"
+  ;;
+"api user")
+  printf '%s\n' "${GH_STUB_LOGIN:-octocat}"
   ;;
 "issue view")
   if [ "${4:-}" = --json ]; then
-    jq --argjson number "$3" '.[] | select(.number == $number)' "$GH_STUB_DIR/issues.json"
+    jq --argjson number "$3" '.data.repository.issues.nodes[] | select(.number == $number) | {number, title}' "$GH_STUB_DIR"/issues-page-*.json
   else
     printf 'issue %s\n' "$3"
   fi

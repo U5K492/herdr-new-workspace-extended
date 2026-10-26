@@ -37,7 +37,7 @@ setup() {
 }
 
 @test "when gh fails to list issues, the picker shows the error, waits for a key and creates nothing" {
-  export GH_STUB_FAIL="issue list"
+  export GH_STUB_FAIL="api graphql"
   fzf_will_select github_issue
 
   run_picker_from "$REPO"

@@ -5,17 +5,18 @@ nwe_github_issue_available() {
 }
 
 nwe_github_issue_items() {
-  nwe_github_issue_list || {
+  nwe_github_issue_pages || {
     nwe_notice "gh could not list the open issues."
     return 1
   }
 }
 
 nwe_github_issue_choose() {
-  local toggle
+  local toggle limit
   toggle="$(nwe_config .keys.toggle_assigned ctrl-o)" || return 1
-  export -f nwe_github_issue_list nwe_github_issue_lines nwe_github_issue_toggle
-  nwe_choose "Issue> " "$(printf '%s\n' "$1" | nwe_github_issue_lines)" --with-shell "$BASH -c" --header "$toggle: assigned to me / all" --bind "$toggle:transform:nwe_github_issue_toggle" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap'
+  limit="$(nwe_github_issue_limit)" || return 1
+  export -f nwe_github_issue_pages nwe_github_issue_format nwe_github_issue_take nwe_github_issue_all nwe_github_issue_mine nwe_github_issue_toggle
+  nwe_choose "Issue> " --with-shell "$BASH -c" --header "$toggle: assigned to me / all" --bind "$toggle:transform:nwe_github_issue_toggle $limit" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap' < <(nwe_github_issue_stream "$1" | nwe_github_issue_take "$limit")
 }
 
 nwe_github_issue_resolve() {
@@ -33,21 +34,62 @@ nwe_github_issue_resolve() {
   printf '%s\n%s\n%s\n' "$branch" "$base" "#$number $title"
 }
 
-# shellcheck disable=SC2120
-nwe_github_issue_list() {
-  gh issue list --state open --limit 100 --json number,title,labels "$@"
+# shellcheck disable=SC2016
+nwe_github_issue_pages() {
+  gh api graphql -F owner='{owner}' -F name='{repo}' -f query='query($owner: String!, $name: String!, $endCursor: String, $filterBy: IssueFilters) { repository(owner: $owner, name: $name) { issues(first: 100, after: $endCursor, states: OPEN, filterBy: $filterBy, orderBy: {field: CREATED_AT, direction: DESC}) { nodes { number title labels(first: 20) { nodes { name } } } pageInfo { hasNextPage endCursor } } } }' "$@"
+}
+
+nwe_github_issue_stream() {
+  local page="$1" cursor
+  printf '%s\n' "$page" | nwe_github_issue_lines
+  cursor="$(printf '%s\n' "$page" | jq -r '.data.repository.issues.pageInfo | select(.hasNextPage) | .endCursor')"
+  if [ -n "$cursor" ]; then
+    nwe_github_issue_pages --paginate -f endCursor="$cursor" --jq "$(nwe_github_issue_format)" 2>/dev/null
+  fi
+}
+
+nwe_github_issue_all() {
+  nwe_github_issue_pages --paginate --jq "$(nwe_github_issue_format)" 2>/dev/null | nwe_github_issue_take "${1:-}"
+}
+
+nwe_github_issue_mine() {
+  local login
+  login="$(gh api user --cache 24h --jq .login 2>/dev/null)" || return 1
+  nwe_github_issue_pages --paginate -f "filterBy[assignee]=$login" --jq "$(nwe_github_issue_format)" 2>/dev/null | nwe_github_issue_take "${1:-}"
 }
 
 nwe_github_issue_toggle() {
   if [ "$FZF_PROMPT" = "Issue> " ]; then
-    printf '%s\n' 'change-prompt(My issue> )+reload(nwe_github_issue_list --assignee @me | nwe_github_issue_lines)'
+    printf 'change-prompt(My issue> )+reload(nwe_github_issue_mine %s)\n' "${1:-}"
   else
-    printf '%s\n' 'change-prompt(Issue> )+reload(nwe_github_issue_list | nwe_github_issue_lines)'
+    printf 'change-prompt(Issue> )+reload(nwe_github_issue_all %s)\n' "${1:-}"
+  fi
+}
+
+nwe_github_issue_limit() {
+  local limit
+  limit="$(nwe_config .limits.issues "")" || return 1
+  if [ -n "$limit" ] && ! [[ "$limit" =~ ^[1-9][0-9]*$ ]]; then
+    nwe_notice "limits.issues in config.json must be a positive whole number, not $limit."
+    return 1
+  fi
+  printf '%s\n' "$limit"
+}
+
+nwe_github_issue_take() {
+  if [ -n "$1" ]; then
+    head -n "$1"
+  else
+    cat
   fi
 }
 
 nwe_github_issue_lines() {
-  jq -r '.[] | "\(.number)\t#\(.number) \(.title | gsub("\t"; " "))\(if (.labels | length) > 0 then "  [\(.labels | map(.name) | join(", "))]" else "" end)"'
+  jq -r "$(nwe_github_issue_format)"
+}
+
+nwe_github_issue_format() {
+  printf '%s\n' '.data.repository.issues.nodes[] | "\(.number)\t#\(.number) \(.title | gsub("\t"; " "))\(if (.labels.nodes | length) > 0 then "  [\(.labels.nodes | map(.name) | join(", "))]" else "" end)"'
 }
 
 nwe_github_issue_branch() {

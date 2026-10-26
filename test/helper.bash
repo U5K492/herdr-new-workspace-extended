@@ -10,7 +10,7 @@ setup_stubs() {
   : >"$FZF_STUB_DIR/calls"
   : >"$HERDR_STUB_DIR/calls"
   : >"$GH_STUB_DIR/calls"
-  cp "$BATS_TEST_DIRNAME/fixtures/issues.json" "$GH_STUB_DIR/issues.json"
+  cp "$BATS_TEST_DIRNAME"/fixtures/issues-page-*.json "$GH_STUB_DIR/"
   cp "$BATS_TEST_DIRNAME/fixtures/prs.json" "$GH_STUB_DIR/prs.json"
   export PATH="$BATS_TEST_DIRNAME/stubs:$PATH"
   export HERDR_BIN_PATH="$BATS_TEST_DIRNAME/stubs/herdr"
@@ -59,6 +59,10 @@ fzf_will_cancel() {
 
 fzf_will_fail() {
   printf 'fail\t%s\n' "$1" >>"$FZF_STUB_DIR/queue"
+}
+
+fzf_input() {
+  cat "$FZF_STUB_DIR/input.$1"
 }
 
 fzf_calls() {

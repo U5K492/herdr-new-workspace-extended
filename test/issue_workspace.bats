@@ -81,6 +81,40 @@ setup() {
   [[ "$(fzf_calls)" == *"--header alt-m: assigned to me / all --bind alt-m:transform:nwe_github_issue_toggle"* ]]
 }
 
+@test "an issue on a later page can be picked" {
+  fzf_will_select github_issue
+  fzf_will_select 7
+  fzf_will_accept
+
+  run_picker_from "$REPO"
+
+  [ "$status" -eq 0 ]
+  [[ "$(herdr_calls)" == *"[--branch][7-old-issue][--base]"* ]]
+  [[ "$(herdr_calls)" == *"[--label][#7 Old issue]"* ]]
+}
+
+@test "limits.issues in config.json caps the issue list and its reloads" {
+  write_config '{"limits": {"issues": 2}}'
+  fzf_will_select github_issue
+  fzf_will_cancel
+
+  run_picker_from "$REPO"
+
+  [ "$(fzf_input 2 | wc -l | tr -d ' ')" -eq 2 ]
+  [[ "$(fzf_input 2)" != *"#7 Old issue"* ]]
+  [[ "$(fzf_calls)" == *"--bind ctrl-o:transform:nwe_github_issue_toggle 2 "* ]]
+}
+
+@test "a limits.issues that is not a positive whole number shows the error and creates nothing" {
+  write_config '{"limits": {"issues": "many"}}'
+  fzf_will_select github_issue
+
+  run_picker_from "$REPO"
+
+  [[ "$output" == *"limits.issues in config.json must be a positive whole number, not many."* ]]
+  [ -z "$(herdr_calls)" ]
+}
+
 @test "an issue missing from the first list takes its title from gh" {
   source "$REPO_ROOT/lib/ui.sh"
   source "$REPO_ROOT/lib/repo.sh"
