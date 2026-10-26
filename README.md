@@ -6,6 +6,8 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Pull requests from forks are not supported yet
 
+![Opening a worktree workspace from an issue, then from a pull request](demo/demo.gif)
+
 Outside a git repository, or in one without an `origin` remote, the picker skips the menu and asks for a name.
 
 If the chosen branch already has a worktree, the picker opens it instead of creating another.
@@ -57,7 +59,7 @@ mise install
 herdr plugin link "$PWD"
 bats test
 NWE_TEST_BASH=/bin/bash bats test
-shellcheck bin/*.sh lib/*.sh sources/*.sh test/stubs/*
+shellcheck bin/*.sh lib/*.sh sources/*.sh test/stubs/* demo/*.sh demo/bin/*
 ```
 
 If you installed the plugin from GitHub, run `herdr plugin uninstall u5k492.new-workspace-extended` before linking your clone.
@@ -67,6 +69,17 @@ If you installed the plugin from GitHub, run `herdr plugin uninstall u5k492.new-
 The popup runs `bash` from the herdr server's `PATH`, which can be macOS's `/bin/bash` 3.2. Keep scripts compatible with bash 3.2, and run the specs with `NWE_TEST_BASH=/bin/bash` to check.
 
 Functions in `lib/` mostly run inside command substitutions, where bash turns `set -e` off. End each step that can fail with `|| return 1` so a failure stops the picker instead of carrying on with stale values.
+
+### Recording the demo
+
+When the picker looks different, record `demo/demo.gif` again with [VHS](https://github.com/charmbracelet/vhs):
+
+```sh
+brew install vhs
+demo/record.sh
+```
+
+`demo/record.sh` builds a throwaway home with a sample repository, links your clone into a separate herdr server there, and plays `demo/demo.tape`. In that server, `gh` is `demo/bin/gh`, which returns sample issues and pull requests. Your own herdr session and GitHub account are not touched, and the home is removed when the recording ends.
 
 ### Layout
 
@@ -80,6 +93,7 @@ Functions in `lib/` mostly run inside command substitutions, where bash turns `s
   - `nwe_<name>_resolve <items> <key>` prints the branch, the base (empty to let herdr decide) and the label on three lines
 
   When `items` or `resolve` fails, show why with `nwe_notice` before returning non-zero. The popup closes as soon as the picker exits, so an error left only on stderr cannot be read
+- `demo/`: the VHS tape and scripts that record `demo/demo.gif`
 - `test/`: bats specs. `test/stubs/` fakes fzf, gh and herdr, and `test/fixtures/` holds the JSON the gh stub returns. git is real: each spec builds a throwaway origin and clone
 
 ### The `nwe` prefix

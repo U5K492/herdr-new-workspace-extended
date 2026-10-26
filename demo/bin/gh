@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "$1 $2" in
+"issue list")
+  cat <<'EOF'
+[
+  {"number": 42, "title": "Add a dark mode toggle", "labels": [{"name": "enhancement"}]},
+  {"number": 38, "title": "Crash when the config file is empty", "labels": [{"name": "bug"}]},
+  {"number": 31, "title": "Document the plugin API", "labels": [{"name": "docs"}]},
+  {"number": 27, "title": "Support Linux keyrings", "labels": []}
+]
+EOF
+  ;;
+"issue view")
+  case "$3" in
+  42) printf 'Add a dark mode toggle #42\nOpen • 3 comments\nLabels: enhancement\n\n  Let users switch themes from the settings page\n  instead of editing the config file.\n' ;;
+  38) printf 'Crash when the config file is empty #38\nOpen • 1 comment\nLabels: bug\n\n  Starting the app with an empty config.toml panics\n  while reading the theme.\n' ;;
+  31) printf 'Document the plugin API #31\nOpen • 0 comments\nLabels: docs\n\n  Write a guide for the hooks a plugin can register.\n' ;;
+  *) printf 'Support Linux keyrings #27\nOpen • 5 comments\n\n  Store tokens in the Secret Service on Linux.\n' ;;
+  esac
+  ;;
+"pr list")
+  cat <<'EOF'
+[
+  {"number": 45, "title": "Cache GitHub API responses", "headRefName": "feat/cache-api", "isCrossRepository": false, "author": {"login": "alice"}},
+  {"number": 44, "title": "Fix the flaky login test", "headRefName": "fix/flaky-login", "isCrossRepository": false, "author": {"login": "bob"}}
+]
+EOF
+  ;;
+"pr view")
+  case "$3" in
+  45) printf 'Cache GitHub API responses #45\nOpen • alice wants to merge 1 commit into main from feat/cache-api\n\n  Keep responses for 60 seconds so repeated lookups\n  do not hit the rate limit.\n' ;;
+  *) printf 'Fix the flaky login test #44\nOpen • bob wants to merge 1 commit into main from fix/flaky-login\n\n  Wait for the session cookie before asserting.\n' ;;
+  esac
+  ;;
+"repo view")
+  printf '{"defaultBranchRef":{"name":"main"}}\n'
+  ;;
+*)
+  echo "demo gh: unexpected call: $*" >&2
+  exit 2
+  ;;
+esac
