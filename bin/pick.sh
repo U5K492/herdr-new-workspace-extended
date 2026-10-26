@@ -4,6 +4,8 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # shellcheck source=../lib/ui.sh
 source "$root/lib/ui.sh"
+# shellcheck source=../lib/config.sh
+source "$root/lib/config.sh"
 # shellcheck source=../lib/create.sh
 source "$root/lib/create.sh"
 # shellcheck source=../lib/repo.sh

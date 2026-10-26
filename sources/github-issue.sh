@@ -12,8 +12,10 @@ nwe_github_issue_items() {
 }
 
 nwe_github_issue_choose() {
+  local toggle
+  toggle="$(nwe_config .keys.toggle_assigned ctrl-o)" || return 1
   export -f nwe_github_issue_list nwe_github_issue_lines nwe_github_issue_toggle
-  nwe_choose "Issue> " "$(printf '%s\n' "$1" | nwe_github_issue_lines)" --with-shell "$BASH -c" --header 'ctrl-o: assigned to me / all' --bind 'ctrl-o:transform:nwe_github_issue_toggle' --preview 'gh issue view {1}' --preview-window 'down,50%,wrap'
+  nwe_choose "Issue> " "$(printf '%s\n' "$1" | nwe_github_issue_lines)" --with-shell "$BASH -c" --header "$toggle: assigned to me / all" --bind "$toggle:transform:nwe_github_issue_toggle" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap'
 }
 
 nwe_github_issue_resolve() {

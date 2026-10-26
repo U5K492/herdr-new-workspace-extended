@@ -33,6 +33,10 @@ accept)
 cancel)
   exit 130
   ;;
+fail)
+  echo "unsupported key: $value" >&2
+  exit 2
+  ;;
 *)
   echo "fzf stub: no response queued for call $n" >&2
   exit 2

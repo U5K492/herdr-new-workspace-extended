@@ -70,6 +70,17 @@ setup() {
   [[ "$(fzf_calls)" == *"--header ctrl-o: assigned to me / all --bind ctrl-o:transform:nwe_github_issue_toggle"* ]]
 }
 
+@test "keys.toggle_assigned in config.json replaces ctrl-o" {
+  write_config '{"keys": {"toggle_assigned": "alt-m"}}'
+  fzf_will_select github_issue
+  fzf_will_select 12
+  fzf_will_accept
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls)" == *"--header alt-m: assigned to me / all --bind alt-m:transform:nwe_github_issue_toggle"* ]]
+}
+
 @test "an issue missing from the first list takes its title from gh" {
   source "$REPO_ROOT/lib/ui.sh"
   source "$REPO_ROOT/lib/repo.sh"
