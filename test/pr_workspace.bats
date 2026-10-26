@@ -50,13 +50,13 @@ setup() {
   [[ "$(fzf_calls)" == *"--preview gh pr view {1}"* ]]
 }
 
-@test "ctrl-o in the PR list toggles the pull requests opened by me" {
+@test "ctrl-o in the PR list toggles the pull requests opened by me, and ctrl-r the ones that request my review" {
   fzf_will_select github_pr
   fzf_will_select 34
 
   run_picker_from "$REPO"
 
-  [[ "$(fzf_calls)" == *"--header ctrl-o: opened by me / all --bind ctrl-o:transform:nwe_github_pr_toggle"* ]]
+  [[ "$(fzf_calls)" == *"--header ctrl-o: opened by me / all, ctrl-r: review requested / all --bind ctrl-o:transform:nwe_github_pr_toggle mine --bind ctrl-r:transform:nwe_github_pr_toggle review "* ]]
 }
 
 @test "keys.toggle_mine in config.json replaces ctrl-o in the PR list" {
@@ -66,7 +66,17 @@ setup() {
 
   run_picker_from "$REPO"
 
-  [[ "$(fzf_calls)" == *"--header alt-m: opened by me / all --bind alt-m:transform:nwe_github_pr_toggle"* ]]
+  [[ "$(fzf_calls)" == *"--header alt-m: opened by me / all, ctrl-r: review requested / all --bind alt-m:transform:nwe_github_pr_toggle mine "* ]]
+}
+
+@test "keys.toggle_review_requested in config.json replaces ctrl-r in the PR list" {
+  write_config '{"keys": {"toggle_review_requested": "alt-r"}}'
+  fzf_will_select github_pr
+  fzf_will_select 34
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls)" == *"--header ctrl-o: opened by me / all, alt-r: review requested / all --bind ctrl-o:transform:nwe_github_pr_toggle mine --bind alt-r:transform:nwe_github_pr_toggle review "* ]]
 }
 
 @test "a PR missing from the first list takes its head and title from gh" {
