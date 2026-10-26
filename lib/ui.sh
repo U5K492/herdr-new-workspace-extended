@@ -1,9 +1,14 @@
 # shellcheck shell=bash
 
-nwe_menu() {
-  local selection
-  selection="$(printf '%s\n' "$1" | fzf --delimiter "$(printf '\t')" --with-nth 2.. --prompt "New workspace> " --layout reverse)" || return 1
+nwe_choose() {
+  local prompt="$1" items="$2" selection
+  shift 2
+  selection="$(printf '%s\n' "$items" | fzf --delimiter "$(printf '\t')" --with-nth 2.. --prompt "$prompt" --layout reverse "$@")" || return 1
   printf '%s\n' "${selection%%$'\t'*}"
+}
+
+nwe_menu() {
+  nwe_choose "New workspace> " "$1"
 }
 
 nwe_input() {

@@ -3,16 +3,19 @@
 A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the new workspace key and pick how to start:
 
 - **With a name**: create a regular workspace, like the built-in command
-- **From a GitHub issue** (planned): pick an open issue with fzf, confirm a branch name, and open a worktree workspace
+- **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch
 - **From a GitHub pull request** (planned): pick an open pull request and open a worktree workspace on its branch
 
-> Status: early development. Only "With a name" works today.
+> Status: early development. "With a name" and "From a GitHub issue" work today.
 
 ## Requirements
 
 - herdr 0.9.5 or later
 - bash
+- git
 - [fzf](https://github.com/junegunn/fzf)
+- [jq](https://jqlang.org)
+- [GitHub CLI](https://cli.github.com) (`gh`), signed in to the repository's host
 
 ## Setup
 
@@ -49,7 +52,7 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 mise install
 herdr plugin link "$PWD"
 bats test
-NWE_TEST_BASH=/bin/bash bats test/new_workspace.bats
+NWE_TEST_BASH=/bin/bash bats test/*_workspace.bats
 shellcheck bin/*.sh lib/*.sh test/stubs/*
 ```
 
@@ -62,7 +65,7 @@ The popup runs `bash` from the herdr server's `PATH`, which can be macOS's `/bin
 - `bin/open-picker.sh`: the `new` action. Opens the picker popup and passes the invocation context to it
 - `bin/pick.sh`: runs inside the popup
 - `lib/`: functions sourced by `bin/pick.sh`
-- `test/`: bats specs. `test/stubs/` fakes fzf and herdr
+- `test/`: bats specs. `test/stubs/` fakes fzf, gh and herdr, and `test/fixtures/` holds the JSON the gh stub returns. git is real: each spec builds a throwaway origin and clone
 
 ### The `nwe` prefix
 

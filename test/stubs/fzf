@@ -19,6 +19,17 @@ type)
   printf '%s\n' "$value"
   exit 1
   ;;
+accept)
+  query=""
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = "--query" ]; then
+      query="$2"
+    fi
+    shift
+  done
+  printf '%s\n' "$query"
+  exit 1
+  ;;
 cancel)
   exit 130
   ;;

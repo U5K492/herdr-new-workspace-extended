@@ -1,0 +1,12 @@
+[
+  {
+    "number": 12,
+    "title": "Add login page",
+    "labels": [{ "name": "enhancement" }, { "name": "ui" }]
+  },
+  {
+    "number": 15,
+    "title": "ログイン画面を直す",
+    "labels": []
+  }
+]
