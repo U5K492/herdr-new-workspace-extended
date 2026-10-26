@@ -13,7 +13,7 @@ nwe_repo_root() {
 
 nwe_latest_default_commit() {
   local branch
-  branch="$(gh repo view --json defaultBranchRef | jq -r '.defaultBranchRef.name')"
-  git fetch --quiet origin "$branch"
+  branch="$(gh repo view --json defaultBranchRef | jq -r '.defaultBranchRef.name')" || return 1
+  git fetch --quiet origin "$branch" || return 1
   git rev-parse --verify --quiet "refs/remotes/origin/$branch^{commit}"
 }

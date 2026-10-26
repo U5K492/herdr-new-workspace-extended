@@ -91,3 +91,14 @@ setup() {
   [ "$status" -eq 0 ]
   [ -z "$(herdr_calls)" ]
 }
+
+@test "a failed fetch of the default branch creates nothing" {
+  git -C "$REPO" remote set-url origin "$BATS_TEST_TMPDIR/missing.git"
+  fzf_will_select issue
+  fzf_will_select 12
+  fzf_will_accept
+
+  run_picker_from "$REPO"
+
+  [ -z "$(herdr_calls)" ]
+}

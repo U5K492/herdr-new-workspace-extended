@@ -60,6 +60,8 @@ shellcheck bin/*.sh lib/*.sh test/stubs/*
 
 The popup runs `bash` from the herdr server's `PATH`, which can be macOS's `/bin/bash` 3.2. Keep scripts compatible with bash 3.2, and run the specs with `NWE_TEST_BASH=/bin/bash` to check.
 
+Functions in `lib/` mostly run inside command substitutions, where bash turns `set -e` off. End each step that can fail with `|| return 1` so a failure stops the picker instead of carrying on with stale values.
+
 ### Layout
 
 - `bin/open-picker.sh`: the `new` action. Opens the picker popup and passes the invocation context to it
