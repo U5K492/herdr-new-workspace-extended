@@ -75,6 +75,24 @@ herdr_calls() {
   cat "$HERDR_STUB_DIR/calls"
 }
 
+herdr_will_return() {
+  rm -f "$HERDR_STUB_DIR/response.$1.$2.err"
+  printf '%s\n' "$3" >"$HERDR_STUB_DIR/response.$1.$2.out"
+}
+
+herdr_will_fail() {
+  rm -f "$HERDR_STUB_DIR/response.$1.$2.out"
+  printf '%s\n' "$3" >"$HERDR_STUB_DIR/response.$1.$2.err"
+}
+
+wait_for_herdr_call() {
+  for _ in $(seq 50); do
+    case "$(herdr_calls)" in *"$1"*) return 0 ;; esac
+    sleep 0.1
+  done
+  return 1
+}
+
 write_config() {
   printf '%s\n' "$1" >"$HERDR_PLUGIN_CONFIG_DIR/config.json"
 }

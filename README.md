@@ -13,6 +13,8 @@ Outside a git repository, the picker skips the menu and asks for a name. In a re
 
 If the chosen branch already has a worktree, the picker opens it instead of creating another.
 
+The new workspace can also start an agent, such as Claude Code or Codex, in its first pane. Set `agent.kind` in [Configuration](#configuration) to turn it on.
+
 > Status: 0.1.0. Tested with herdr 0.9.5 on macOS. Linux should work but has not been tried.
 
 ## Requirements
@@ -65,6 +67,9 @@ Every setting is optional. Without the file, the picker uses the defaults.
 
 ```json
 {
+  "agent": {
+    "kind": "claude"
+  },
   "keys": {
     "toggle_mine": "ctrl-o",
     "toggle_review_requested": "ctrl-r"
@@ -75,6 +80,7 @@ Every setting is optional. Without the file, the picker uses the defaults.
 }
 ```
 
+- `agent.kind`: the agent to start in the first pane of a new workspace, such as `claude` or `codex`. Any kind that `herdr agent start --kind` accepts works. Without it, no agent starts. A worktree that is already open in herdr gets no second agent. The agent is named after the branch, or after the name of a plain workspace, so you can reach it with `herdr agent prompt <name>`. The name is lowercased and the characters herdr does not accept become `-`. The kind goes in front when the name does not start with a letter, and the workspace ID goes at the end when another agent already has the name. The picker closes without waiting for the agent. If the agent cannot start, or stops at a prompt such as Claude Code asking whether to trust a new folder, the picker sends a notification. herdr shows it only when `delivery` under `[ui.toast]` in herdr's `config.toml` is not `off`, which is the default. A prompt stays on the agent's pane either way
 - `keys.toggle_mine`: the key that switches the issue list between all open issues and the ones assigned to you, and the pull request list between all open pull requests and the ones you opened. Defaults to `ctrl-o`. Write it as fzf's `--bind` does, such as `ctrl-t` or `alt-m`. If fzf does not accept the key, the picker shows fzf's error before closing. Its old name, `keys.toggle_assigned`, is still read when `keys.toggle_mine` is not set
 - `keys.toggle_review_requested`: the key that switches the pull request list between all open pull requests and the ones that request your review, directly or through one of your teams. Defaults to `ctrl-r`. Write it the same way as `keys.toggle_mine`
 - `limits.issues`: the most issues the issue list loads, in both the full list and the one assigned to you. Without it, the list loads every open issue. Loading takes about a second per 100 issues, and the rest stops loading once you pick one, so set it only to keep a large repository from spending API calls
@@ -96,6 +102,8 @@ If you installed the plugin from GitHub, run `herdr plugin uninstall u5k492.new-
 The popup runs `bash` from the herdr server's `PATH`, which can be macOS's `/bin/bash` 3.2. Keep scripts compatible with bash 3.2, and run the specs with `NWE_TEST_BASH=/bin/bash` to check.
 
 Functions in `lib/` mostly run inside command substitutions, where bash turns `set -e` off. End each step that can fail with `|| return 1` so a failure stops the picker instead of carrying on with stale values.
+
+The agent starts in the background so the popup can close right away. herdr hangs up the popup's terminal when the picker exits, so `nwe_start_agent` ignores `SIGHUP` while it forks, and the child keeps ignoring it. Starting the child with `nohup` alone was not enough in testing: when the picker exited right away, the start was lost.
 
 ### Recording the demo
 

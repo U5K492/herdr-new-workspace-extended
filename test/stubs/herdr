@@ -5,4 +5,13 @@ set -euo pipefail
   printf '[%s]' "$@"
   printf '\n'
 } >>"$HERDR_STUB_DIR/calls"
+response="$HERDR_STUB_DIR/response.${1:-}.${2:-}"
+if [ -f "$response.err" ]; then
+  cat "$response.err" >&2
+  exit 1
+fi
+if [ -f "$response.out" ]; then
+  cat "$response.out"
+  exit 0
+fi
 printf '{"id":"stub","result":{"type":"ok"}}\n'
