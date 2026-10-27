@@ -19,7 +19,7 @@ Ctrl+B
 Type "N"
 Wait+Screen /From a GitHub issue/
 Sleep 1s
-Down
+Down 2
 Sleep 500ms
 Enter
 Wait+Screen /Issue>/
@@ -41,7 +41,7 @@ Ctrl+B
 Type "N"
 Wait+Screen /From a GitHub pull request/
 Sleep 1s
-Down 2
+Down 3
 Sleep 500ms
 Enter
 Wait+Screen /Pull request>/

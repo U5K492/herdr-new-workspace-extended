@@ -28,7 +28,10 @@ $2
 EOT
   if nwe_has_worktree "$repo" "$branch"; then
     nwe_herdr worktree open --cwd "$repo" --branch "$branch" --focus >/dev/null
-  elif [ -n "$base" ]; then
+    return
+  fi
+  nwe_progress "Creating a worktree for $branch..."
+  if [ -n "$base" ]; then
     nwe_herdr worktree create --cwd "$repo" --branch "$branch" --base "$base" --label "$label" --focus >/dev/null
   else
     nwe_herdr worktree create --cwd "$repo" --branch "$branch" --label "$label" --focus >/dev/null

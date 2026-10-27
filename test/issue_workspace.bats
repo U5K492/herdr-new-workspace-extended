@@ -122,7 +122,7 @@ setup() {
   fzf_will_accept
   cd "$REPO"
 
-  run nwe_github_issue_resolve "[]" 12
+  run --separate-stderr nwe_github_issue_resolve "[]" 12
 
   [ "$status" -eq 0 ]
   [ "${lines[0]}" = 12-add-login-page ]

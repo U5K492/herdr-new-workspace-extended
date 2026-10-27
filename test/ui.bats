@@ -58,6 +58,14 @@ setup() {
   [[ "$output" == *"fzf exited with an error."* ]]
 }
 
+@test "nwe_progress shows the message on stderr without waiting for a key" {
+  run --separate-stderr nwe_progress "Fetching origin/main..."
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "" ]
+  [ "$stderr" = "Fetching origin/main..." ]
+}
+
 @test "nwe_notice shows the message and how to close" {
   run nwe_notice "Something happened." </dev/null
 

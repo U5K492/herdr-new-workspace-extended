@@ -16,15 +16,14 @@ setup() {
   [ "$(wc -l <"$FZF_STUB_DIR/calls")" -eq 1 ]
 }
 
-@test "in a repo without origin, the picker skips the menu and asks for a name" {
+@test "in a repo without origin, the menu offers only a name and a branch name" {
   git -C "$REPO" remote remove origin
-  fzf_will_type foo
+  fzf_will_cancel
 
   run_picker_from "$REPO"
 
   [ "$status" -eq 0 ]
-  [ "$(herdr_calls)" = '[workspace][create][--label][foo][--focus]' ]
-  [ "$(wc -l <"$FZF_STUB_DIR/calls")" -eq 1 ]
+  [ "$(fzf_input 1 | cut -f1 | tr '\n' ' ')" = "name branch " ]
 }
 
 @test "without a context, the picker skips the menu and asks for a name" {

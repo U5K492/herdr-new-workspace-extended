@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+# shellcheck source=branch.sh
+source "$(dirname "${BASH_SOURCE[0]}")/branch.sh"
 # shellcheck source=github.sh
 source "$(dirname "${BASH_SOURCE[0]}")/github.sh"
 # shellcheck source=github-issue.sh
@@ -8,6 +10,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/github-issue.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/github-pr.sh"
 
 nwe_sources() {
+  printf 'branch\tNew worktree with a branch name\n'
   printf 'github_issue\tFrom a GitHub issue\n'
   printf 'github_pr\tFrom a GitHub pull request\n'
 }

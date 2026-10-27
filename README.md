@@ -3,12 +3,13 @@
 A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the new workspace key and pick how to start:
 
 - **With a name**: create a regular workspace, like the built-in command
+- **With a branch name**: type a branch name and open a worktree workspace on it, without an issue or pull request. A new branch starts from the latest default branch of `origin`, or from where herdr decides when the repository has no `origin`. A branch that already exists is opened as it is. The workspace sits under its repository in the sidebar, like the ones from an issue or a pull request
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. The list opens with the newest 100 issues and keeps loading the rest, 100 at a time, while you search. Press `ctrl-o` in the list to show only the issues assigned to you, and again to show all of them. The key and the number of issues to load can be changed in [Configuration](#configuration)
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Press `ctrl-o` in the list to show only the pull requests you opened, or `ctrl-r` to show only the ones that request your review. Press the same key again to show all of them. The keys can be changed in [Configuration](#configuration). Pull requests from forks are not supported yet
 
 ![Opening a worktree workspace from an issue, then from a pull request](demo/demo.gif)
 
-Outside a git repository, or in one without an `origin` remote, the picker skips the menu and asks for a name.
+Outside a git repository, the picker skips the menu and asks for a name. In a repository without an `origin` remote, the menu offers only a name and a branch name.
 
 If the chosen branch already has a worktree, the picker opens it instead of creating another.
 
