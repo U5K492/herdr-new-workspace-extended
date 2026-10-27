@@ -4,10 +4,10 @@ set -euo pipefail
 issues() {
   cat <<'EOF'
 [
-  {"number": 42, "title": "Add a dark mode toggle", "labels": [{"name": "enhancement"}]},
-  {"number": 38, "title": "Crash when the config file is empty", "labels": [{"name": "bug"}]},
-  {"number": 31, "title": "Document the plugin API", "labels": [{"name": "docs"}]},
-  {"number": 27, "title": "Support Linux keyrings", "labels": []}
+  {"number": 42, "title": "Add a dark mode toggle", "labels": [{"name": "enhancement"}], "assignees": ["demo"]},
+  {"number": 38, "title": "Crash when the config file is empty", "labels": [{"name": "bug"}], "assignees": ["alice"]},
+  {"number": 31, "title": "Document the plugin API", "labels": [{"name": "docs"}], "assignees": ["demo"]},
+  {"number": 27, "title": "Support Linux keyrings", "labels": [], "assignees": []}
 ]
 EOF
 }
@@ -15,15 +15,24 @@ EOF
 prs() {
   cat <<'EOF'
 [
-  {"number": 45, "title": "Cache GitHub API responses", "headRefName": "feat/cache-api", "isCrossRepository": false, "author": {"login": "alice"}},
-  {"number": 44, "title": "Fix the flaky login test", "headRefName": "fix/flaky-login", "isCrossRepository": false, "author": {"login": "bob"}}
+  {"number": 45, "title": "Cache GitHub API responses", "headRefName": "feat/cache-api", "isCrossRepository": false, "author": {"login": "alice"}, "reviewRequests": [{"login": "demo"}]},
+  {"number": 44, "title": "Fix the flaky login test", "headRefName": "fix/flaky-login", "isCrossRepository": false, "author": {"login": "bob"}, "reviewRequests": []}
 ]
 EOF
 }
 
 case "$1 $2" in
 "api graphql")
-  issues | jq '{data: {repository: {issues: {nodes: map(.labels = {nodes: .labels}), pageInfo: {hasNextPage: false, endCursor: null}}}}}'
+  assignee=""
+  filter=.
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    "filterBy[assignee]="*) assignee="${1#*=}" ;;
+    --jq) filter="$2" ;;
+    esac
+    shift
+  done
+  issues | jq --arg assignee "$assignee" '{data: {repository: {issues: {nodes: map(select($assignee == "" or (.assignees | index($assignee))) | .labels = {nodes: .labels}), pageInfo: {hasNextPage: false, endCursor: null}}}}}' | jq -r "$filter"
   ;;
 "api user")
   printf 'demo\n'
@@ -41,7 +50,11 @@ case "$1 $2" in
   esac
   ;;
 "pr list")
-  prs
+  case "$*" in
+  *"--author @me"*) prs | jq 'map(select(.author.login == "demo"))' ;;
+  *"review-requested:@me"*) prs | jq 'map(select(.reviewRequests | map(.login) | index("demo")))' ;;
+  *) prs ;;
+  esac
   ;;
 "pr view")
   if [ "${4:-}" = --json ]; then

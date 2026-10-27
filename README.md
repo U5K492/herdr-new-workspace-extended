@@ -7,7 +7,7 @@ A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the ne
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. The list opens with the newest 100 issues and keeps loading the rest, 100 at a time, while you search. Press `ctrl-o` in the list to show only the issues assigned to you, and again to show all of them. The key and the number of issues to load can be changed in [Configuration](#configuration)
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Press `ctrl-o` in the list to show only the pull requests you opened, or `ctrl-r` to show only the ones that request your review. Press the same key again to show all of them. The keys can be changed in [Configuration](#configuration). Pull requests from forks are not supported yet
 
-![Opening a worktree workspace from an issue, then from a pull request](demo/demo.gif)
+![Creating a workspace with a name, then worktree workspaces from an issue, a pull request and a branch name, each with Claude Code started in it, and reopening the pull request's worktree](demo/demo.gif)
 
 Outside a git repository, the picker skips the menu and asks for a name. In a repository without an `origin` remote, the menu offers only a name and a branch name.
 
@@ -107,14 +107,14 @@ The agent starts in the background so the popup can close right away. herdr hang
 
 ### Recording the demo
 
-When the picker looks different, record `demo/demo.gif` again with [VHS](https://github.com/charmbracelet/vhs):
+When the picker looks different, record `demo/demo.gif` again with [VHS](https://github.com/charmbracelet/vhs). Claude Code (`claude`) must be on your `PATH`:
 
 ```sh
 brew install vhs
 demo/record.sh
 ```
 
-`demo/record.sh` builds a throwaway home with a sample repository, links your clone into a separate herdr server there, and plays `demo/demo.tape`. In that server, `gh` is `demo/bin/gh`, which returns sample issues and pull requests. Your own herdr session and GitHub account are not touched, and the home is removed when the recording ends.
+`demo/record.sh` builds a throwaway home with a sample repository, links your clone into a separate herdr server there, and plays `demo/demo.tape`. In that server, `gh` is `demo/bin/gh`, which returns sample issues and pull requests. `agent.kind` is set to `claude`, and your `claude` starts with a config in the throwaway home that is not signed in and already trusts the folders the tape opens, so the recording shows no account and no prompt. Your own herdr session, GitHub account and Claude Code settings are not touched, and the home is removed when the recording ends.
 
 ### Layout
 
