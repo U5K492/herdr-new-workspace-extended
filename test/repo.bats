@@ -40,6 +40,38 @@ setup() {
   [ "$output" = "$ORIGIN_MAIN_SHA" ]
 }
 
+@test "nwe_origin_default_branch reads origin/HEAD without reaching origin" {
+  git -C "$REPO" remote set-url origin "$BATS_TEST_TMPDIR/missing.git"
+  cd "$REPO"
+
+  run nwe_origin_default_branch
+
+  [ "$status" -eq 0 ]
+  [ "$output" = main ]
+}
+
+@test "nwe_origin_default_branch asks origin when origin/HEAD is not set" {
+  git -C "$REPO" remote set-head origin -d
+  git -C "$BATS_TEST_TMPDIR/origin.git" branch -q develop main
+  git -C "$BATS_TEST_TMPDIR/origin.git" symbolic-ref HEAD refs/heads/develop
+  cd "$REPO"
+
+  run nwe_origin_default_branch
+
+  [ "$status" -eq 0 ]
+  [ "$output" = develop ]
+}
+
+@test "nwe_origin_default_branch fails when origin/HEAD is not set and origin cannot be reached" {
+  git -C "$REPO" remote set-head origin -d
+  git -C "$REPO" remote set-url origin "$BATS_TEST_TMPDIR/missing.git"
+  cd "$REPO"
+
+  run nwe_origin_default_branch
+
+  [ "$status" -ne 0 ]
+}
+
 @test "nwe_has_worktree finds a linked worktree of the branch" {
   git -C "$REPO" worktree add -q "$BATS_TEST_TMPDIR/child" -b child
 

@@ -7,6 +7,18 @@ nwe_repo_root() {
   dirname "$common"
 }
 
+nwe_origin_default_branch() {
+  local head branch
+  if head="$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD)"; then
+    printf '%s\n' "${head#origin/}"
+    return 0
+  fi
+  head="$(git ls-remote --symref origin HEAD)" || return 1
+  branch="$(awk '$1 == "ref:" { sub("^refs/heads/", "", $2); print $2 }' <<<"$head")"
+  [ -n "$branch" ] || return 1
+  printf '%s\n' "$branch"
+}
+
 nwe_fetch_origin_commit() {
   local branch="$1"
   git fetch --quiet origin "$branch" || return 1
