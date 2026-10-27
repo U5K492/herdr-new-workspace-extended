@@ -22,6 +22,16 @@ setup() {
   [ "$(herdr_calls)" = "[worktree][create][--cwd][$REPO][--branch][my-feature][--base][$ORIGIN_MAIN_SHA][--label][my-feature][--focus]" ]
 }
 
+@test "the popup shows what it is waiting for while it fetches and creates the worktree" {
+  fzf_will_select branch
+  fzf_will_type my-feature
+
+  run_picker_from "$REPO"
+
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"Fetching origin/main..."*"Creating a worktree for my-feature..."* ]]
+}
+
 @test "the base follows the default branch that origin/HEAD points to" {
   push_origin_branch develop
   git -C "$REPO" fetch -q origin develop
@@ -64,6 +74,7 @@ setup() {
 
   [ "$status" -eq 0 ]
   [ "$(herdr_calls)" = "[worktree][open][--cwd][$REPO][--branch][my-feature][--focus]" ]
+  [[ "$output" != *"Creating a worktree"* ]]
 }
 
 @test "an invalid branch name shows the error and creates nothing" {

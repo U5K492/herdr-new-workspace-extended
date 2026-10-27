@@ -49,7 +49,7 @@ setup() {
   export GH_STUB_DEFAULT_BRANCH=trunk
   cd "$REPO"
 
-  run nwe_github_issue_base
+  run --separate-stderr nwe_github_issue_base
 
   [ "$status" -eq 0 ]
   [ "$output" = "$(git -C "$UPSTREAM" rev-parse trunk)" ]

@@ -1,6 +1,7 @@
 setup() {
   load helper
   setup_git_repo
+  source "$REPO_ROOT/lib/ui.sh"
   source "$REPO_ROOT/lib/repo.sh"
 }
 
@@ -34,10 +35,11 @@ setup() {
 @test "nwe_fetch_origin_commit fetches the branch from origin and prints its commit" {
   cd "$REPO"
 
-  run nwe_fetch_origin_commit main
+  run --separate-stderr nwe_fetch_origin_commit main
 
   [ "$status" -eq 0 ]
   [ "$output" = "$ORIGIN_MAIN_SHA" ]
+  [ "$stderr" = "Fetching origin/main..." ]
 }
 
 @test "nwe_origin_default_branch reads origin/HEAD without reaching origin" {

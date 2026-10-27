@@ -85,7 +85,7 @@ setup() {
   source "$REPO_ROOT/sources/github-pr.sh"
   cd "$REPO"
 
-  run nwe_github_pr_resolve "[]" 34
+  run --separate-stderr nwe_github_pr_resolve "[]" 34
 
   [ "$status" -eq 0 ]
   [ "$output" = "$(printf 'feature-x\n\nPR #34 Add feature X')" ]
