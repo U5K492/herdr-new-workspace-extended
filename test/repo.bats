@@ -4,31 +4,6 @@ setup() {
   source "$REPO_ROOT/lib/repo.sh"
 }
 
-@test "nwe_context_cwd prefers the focused pane cwd" {
-  export NWE_CONTEXT_JSON='{"workspace_cwd":"/w","focused_pane_cwd":"/p"}'
-
-  run nwe_context_cwd
-
-  [ "$output" = /p ]
-}
-
-@test "nwe_context_cwd falls back to the workspace cwd" {
-  export NWE_CONTEXT_JSON='{"workspace_cwd":"/w"}'
-
-  run nwe_context_cwd
-
-  [ "$output" = /w ]
-}
-
-@test "nwe_context_cwd is empty without a context" {
-  unset NWE_CONTEXT_JSON
-
-  run nwe_context_cwd
-
-  [ "$status" -eq 0 ]
-  [ "$output" = "" ]
-}
-
 @test "nwe_repo_root resolves a subdirectory to the repo root" {
   mkdir -p "$REPO/src/app"
 
@@ -56,11 +31,10 @@ setup() {
   [ "$output" = "" ]
 }
 
-@test "nwe_latest_default_commit fetches the default branch and prints its commit" {
-  setup_stubs
+@test "nwe_fetch_origin_commit fetches the branch from origin and prints its commit" {
   cd "$REPO"
 
-  run nwe_latest_default_commit
+  run nwe_fetch_origin_commit main
 
   [ "$status" -eq 0 ]
   [ "$output" = "$ORIGIN_MAIN_SHA" ]

@@ -6,16 +6,12 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$root/lib/ui.sh"
 # shellcheck source=../lib/config.sh
 source "$root/lib/config.sh"
-# shellcheck source=../lib/create.sh
-source "$root/lib/create.sh"
+# shellcheck source=../lib/herdr.sh
+source "$root/lib/herdr.sh"
 # shellcheck source=../lib/repo.sh
 source "$root/lib/repo.sh"
-# shellcheck source=../lib/sources.sh
-source "$root/lib/sources.sh"
-# shellcheck source=../sources/github-issue.sh
-source "$root/sources/github-issue.sh"
-# shellcheck source=../sources/github-pr.sh
-source "$root/sources/github-pr.sh"
+# shellcheck source=../sources/index.sh
+source "$root/sources/index.sh"
 
 repo="$(nwe_repo_root "$(nwe_context_cwd)")" || repo=""
 sources="$(nwe_available_sources "$repo")"

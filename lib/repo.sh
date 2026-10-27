@@ -1,9 +1,5 @@
 # shellcheck shell=bash
 
-nwe_context_cwd() {
-  printf '%s' "${NWE_CONTEXT_JSON:-}" | jq -r '.focused_pane_cwd // .workspace_cwd // empty'
-}
-
 nwe_repo_root() {
   local cwd="$1" common
   [ -n "$cwd" ] || return 1
@@ -11,9 +7,8 @@ nwe_repo_root() {
   dirname "$common"
 }
 
-nwe_latest_default_commit() {
-  local branch
-  branch="$(gh repo view --json defaultBranchRef | jq -r '.defaultBranchRef.name')" || return 1
+nwe_fetch_origin_commit() {
+  local branch="$1"
   git fetch --quiet origin "$branch" || return 1
   git rev-parse --verify --quiet "refs/remotes/origin/$branch^{commit}"
 }
