@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
+# shellcheck source=github.sh
+source "$(dirname "${BASH_SOURCE[0]}")/github.sh"
 # shellcheck source=github-issue.sh
 source "$(dirname "${BASH_SOURCE[0]}")/github-issue.sh"
 # shellcheck source=github-pr.sh

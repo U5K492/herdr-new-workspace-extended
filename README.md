@@ -112,7 +112,7 @@ demo/record.sh
 - `bin/open-picker.sh`: the `new` action. Opens the picker popup and passes the invocation context to it
 - `bin/pick.sh`: runs inside the popup
 - `lib/`: functions sourced by `bin/pick.sh` that wrap fzf, herdr, git and `config.json`. They do not call `gh` or any function in `sources/`, so every source can use them
-- `sources/`: where a worktree workspace can start from. `sources/index.sh` loads each source and lists it with its menu title, and its menu key is its name. `bin/pick.sh` calls four functions it defines:
+- `sources/`: where a worktree workspace can start from. `sources/index.sh` loads each source and lists it with its menu title, and its menu key is its name. `sources/github.sh` holds what the GitHub sources share, such as the key that toggles their lists to your own. `bin/pick.sh` calls four functions it defines:
   - `nwe_<name>_available <repo>` succeeds when the repository can use the source. It must not call the network, since it runs every time the key is pressed
   - `nwe_<name>_items` fetches the candidates
   - `nwe_<name>_choose <items>` lets you pick one with fzf and prints its key

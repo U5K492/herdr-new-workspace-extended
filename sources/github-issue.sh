@@ -13,7 +13,7 @@ nwe_github_issue_items() {
 
 nwe_github_issue_choose() {
   local toggle limit
-  toggle="$(nwe_toggle_mine_key)" || return 1
+  toggle="$(nwe_github_toggle_mine_key)" || return 1
   limit="$(nwe_github_issue_limit)" || return 1
   export -f nwe_github_issue_pages nwe_github_issue_format nwe_github_issue_take nwe_github_issue_all nwe_github_issue_mine nwe_github_issue_toggle
   nwe_choose "Issue> " --with-shell "$BASH -c" --header "$toggle: assigned to me / all" --bind "$toggle:transform:nwe_github_issue_toggle $limit" --preview 'gh issue view {1}' --preview-window 'down,50%,wrap' < <(nwe_github_issue_stream "$1" | nwe_github_issue_take "$limit")

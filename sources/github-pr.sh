@@ -13,7 +13,7 @@ nwe_github_pr_items() {
 
 nwe_github_pr_choose() {
   local mine review
-  mine="$(nwe_toggle_mine_key)" || return 1
+  mine="$(nwe_github_toggle_mine_key)" || return 1
   review="$(nwe_config .keys.toggle_review_requested ctrl-r)" || return 1
   export -f nwe_github_pr_list nwe_github_pr_lines nwe_github_pr_all nwe_github_pr_mine nwe_github_pr_review nwe_github_pr_toggle
   printf '%s\n' "$1" | nwe_github_pr_lines | nwe_choose "Pull request> " --with-shell "$BASH -c" --header "$mine: opened by me / all, $review: review requested / all" --bind "$mine:transform:nwe_github_pr_toggle mine" --bind "$review:transform:nwe_github_pr_toggle review" --preview 'gh pr view {1}' --preview-window 'down,50%,wrap'
