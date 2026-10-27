@@ -1,9 +1,5 @@
 # shellcheck shell=bash
 
-nwe_context_cwd() {
-  printf '%s' "${NWE_CONTEXT_JSON:-}" | jq -r '.focused_pane_cwd // .workspace_cwd // empty'
-}
-
 nwe_repo_root() {
   local cwd="$1" common
   [ -n "$cwd" ] || return 1

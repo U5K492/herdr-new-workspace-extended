@@ -6,8 +6,8 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source "$root/lib/ui.sh"
 # shellcheck source=../lib/config.sh
 source "$root/lib/config.sh"
-# shellcheck source=../lib/create.sh
-source "$root/lib/create.sh"
+# shellcheck source=../lib/herdr.sh
+source "$root/lib/herdr.sh"
 # shellcheck source=../lib/repo.sh
 source "$root/lib/repo.sh"
 # shellcheck source=../sources/index.sh

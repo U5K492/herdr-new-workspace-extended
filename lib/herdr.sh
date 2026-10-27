@@ -4,6 +4,10 @@ nwe_herdr() {
   "${HERDR_BIN_PATH:-herdr}" "$@"
 }
 
+nwe_context_cwd() {
+  printf '%s' "${NWE_CONTEXT_JSON:-}" | jq -r '.focused_pane_cwd // .workspace_cwd // empty'
+}
+
 nwe_create_named_workspace() {
   local name="$1"
   if [ -n "$name" ]; then
