@@ -59,6 +59,25 @@ description = "new workspace (extended)"
 EOF
 printf "PROMPT='%%F{blue}%%~%%f %%# '\n" >"$NWE_DEMO_HOME/.zshrc"
 "$NWE_DEMO_HERDR" plugin link "$root" >/dev/null
+config="$NWE_DEMO_HOME/.config/herdr/plugins/config/u5k492.new-workspace-extended"
+mkdir -p "$config"
+printf '{"agent": {"kind": "claude"}}\n' >"$config/config.json"
+
+mkdir -p "$NWE_DEMO_HOME/.local/bin"
+ln -s "$(command -v claude)" "$NWE_DEMO_HOME/.local/bin/claude"
+worktrees="$NWE_DEMO_HOME/.herdr/worktrees/acme-app"
+jq -n \
+  --arg version "$(claude --version | cut -d' ' -f1)" \
+  --args '{
+    hasCompletedOnboarding: true,
+    lastOnboardingVersion: $version,
+    lastReleaseNotesSeen: $version,
+    theme: "dark",
+    hasSeenAutoDefaultNotice: true,
+    projects: ($ARGS.positional | map({key: ., value: {hasTrustDialogAccepted: true}}) | from_entries)
+  }' \
+  "$clone" "$worktrees/42-add-a-dark-mode-toggle" "$worktrees/feat-cache-api" "$worktrees/chore-bump-deps" \
+  >"$NWE_DEMO_HOME/.claude.json"
 
 cd "$root"
 vhs "$demo/demo.tape"
