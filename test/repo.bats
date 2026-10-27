@@ -56,11 +56,10 @@ setup() {
   [ "$output" = "" ]
 }
 
-@test "nwe_latest_default_commit fetches the default branch and prints its commit" {
-  setup_stubs
+@test "nwe_fetch_origin_commit fetches the branch from origin and prints its commit" {
   cd "$REPO"
 
-  run nwe_latest_default_commit
+  run nwe_fetch_origin_commit main
 
   [ "$status" -eq 0 ]
   [ "$output" = "$ORIGIN_MAIN_SHA" ]

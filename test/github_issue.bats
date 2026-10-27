@@ -42,6 +42,19 @@ setup() {
   [ "$output" = issue-15 ]
 }
 
+@test "nwe_github_issue_base fetches the default branch gh reports and prints its commit" {
+  setup_git_repo
+  push_origin_branch trunk
+  source "$REPO_ROOT/lib/repo.sh"
+  export GH_STUB_DEFAULT_BRANCH=trunk
+  cd "$REPO"
+
+  run nwe_github_issue_base
+
+  [ "$status" -eq 0 ]
+  [ "$output" = "$(git -C "$UPSTREAM" rev-parse trunk)" ]
+}
+
 @test "nwe_github_issue_lines lists the number as the key and shows the title with labels" {
   run nwe_github_issue_lines <"$BATS_TEST_DIRNAME/fixtures/issues-page-1.json"
 

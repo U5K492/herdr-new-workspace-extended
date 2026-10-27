@@ -27,7 +27,7 @@ nwe_github_issue_resolve() {
   }
   branch="$(nwe_input "Branch> " "$(nwe_github_issue_branch "$number" "$title")")" || return 1
   [ -n "$branch" ] || return 1
-  base="$(nwe_latest_default_commit)" || {
+  base="$(nwe_github_issue_base)" || {
     nwe_notice "Could not fetch the latest default branch from origin."
     return 1
   }
@@ -100,6 +100,12 @@ nwe_github_issue_branch() {
   else
     printf 'issue-%s\n' "$number"
   fi
+}
+
+nwe_github_issue_base() {
+  local branch
+  branch="$(gh repo view --json defaultBranchRef | jq -r '.defaultBranchRef.name')" || return 1
+  nwe_fetch_origin_commit "$branch"
 }
 
 nwe_slug() {
