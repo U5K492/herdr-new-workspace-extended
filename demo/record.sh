@@ -48,9 +48,6 @@ manifest_check = false
 [ui]
 sidebar_width = 34
 
-[keys]
-new_workspace = "prefix+ctrl+n"
-
 [[keys.command]]
 key = "prefix+shift+n"
 type = "plugin_action"

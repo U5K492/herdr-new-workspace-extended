@@ -13,6 +13,23 @@ setup() {
   [ "$(herdr_calls)" = '[plugin][pane][open][--plugin][u5k492.new-workspace-extended][--entrypoint][picker][--env][NWE_CONTEXT_JSON={"workspace_id":"w1"}]' ]
 }
 
+@test "the menu lists a plain new workspace first" {
+  fzf_will_cancel
+
+  run_picker_from "$REPO"
+
+  [ "$(fzf_input 1 | head -n 1)" = "$(printf 'name\tNew workspace')" ]
+}
+
+@test "the name input says that an empty name lets herdr name the workspace" {
+  fzf_will_select name
+  fzf_will_type ""
+
+  run_picker_from "$REPO"
+
+  [[ "$(fzf_calls | sed -n 2p)" == *"--header Leave empty to let herdr name it"* ]]
+}
+
 @test "choosing a name creates a labeled workspace and focuses it" {
   fzf_will_select name
   fzf_will_type foo

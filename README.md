@@ -2,7 +2,7 @@
 
 A [herdr](https://herdr.dev) plugin that extends **new workspace**. Press the new workspace key and pick how to start:
 
-- **With a name**: create a regular workspace, like the built-in command
+- **New workspace**: create a regular workspace with the name you type. Leave the name empty to let herdr name it, the same as the built-in command
 - **With a branch name**: type a branch name and open a worktree workspace on it, without an issue or pull request. A new branch starts from the latest default branch of `origin`, or from where herdr decides when the repository has no `origin`. A branch that already exists is opened as it is. The workspace sits under its repository in the sidebar, like the ones from an issue or a pull request
 - **From a GitHub issue**: pick an open issue with fzf, confirm a branch name, and open a worktree workspace branched from the latest default branch. The list opens with the newest 100 issues and keeps loading the rest, 100 at a time, while you search. Press `ctrl-o` in the list to show only the issues assigned to you, and again to show all of them. The key and the number of issues to load can be changed in [Configuration](#configuration)
 - **From a GitHub pull request**: pick an open pull request and open a worktree workspace on its branch. The branch is fetched and set to track `origin` if it is not local yet. Press `ctrl-o` in the list to show only the pull requests you opened, or `ctrl-r` to show only the ones that request your review. Press the same key again to show all of them. The keys can be changed in [Configuration](#configuration). Pull requests from forks are not supported yet
@@ -34,12 +34,9 @@ The new workspace can also start an agent, such as Claude Code or Codex, in its 
    herdr plugin install U5K492/herdr-new-workspace-extended
    ```
 
-2. Bind the new workspace key to the plugin in `~/.config/herdr/config.toml`, and move the built-in command to another key so you can still reach it:
+2. Bind the new workspace key to the plugin in `~/.config/herdr/config.toml`:
 
    ```toml
-   [keys]
-   new_workspace = "prefix+ctrl+n"
-
    [[keys.command]]
    key = "prefix+shift+n"
    type = "plugin_action"
@@ -47,7 +44,14 @@ The new workspace can also start an agent, such as Claude Code or Codex, in its 
    description = "new workspace (extended)"
    ```
 
-   If your config still sets `new_workspace = "prefix+shift+n"`, herdr keeps the built-in binding and disables this one.
+   The plugin takes the key over from the built-in command. You do not lose the built-in command: press Enter twice, once on **New workspace** and once on the empty name.
+
+   If your config sets `new_workspace = "prefix+shift+n"`, herdr keeps the built-in binding and disables this one, so remove that line. To keep the built-in command on a key of its own, move it instead:
+
+   ```toml
+   [keys]
+   new_workspace = "prefix+ctrl+n"
+   ```
 
 3. Reload the config:
 

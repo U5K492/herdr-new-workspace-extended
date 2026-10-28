@@ -17,11 +17,11 @@ repo="$(nwe_repo_root "$(nwe_context_cwd)")" || repo=""
 sources="$(nwe_available_sources "$repo")"
 choice=name
 if [ -n "$sources" ]; then
-  choice="$(nwe_menu "$(printf 'name\tNew workspace with a name\n%s' "$sources")")" || exit 0
+  choice="$(nwe_menu "$(printf 'name\tNew workspace\n%s' "$sources")")" || exit 0
 fi
 
 if [ "$choice" = name ]; then
-  name="$(nwe_input "Workspace name> " "")" || exit 0
+  name="$(nwe_input "Workspace name> " "" --header "Leave empty to let herdr name it")" || exit 0
   nwe_create_named_workspace "$name"
   exit 0
 fi
