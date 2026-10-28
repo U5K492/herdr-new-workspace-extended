@@ -18,7 +18,8 @@ nwe_menu() {
 
 nwe_input() {
   local prompt="$1" default="$2" query status=0
-  query="$(printf '' | fzf --print-query --query "$default" --prompt "$prompt" --layout reverse --info hidden)" || status=$?
+  shift 2
+  query="$(printf '' | fzf --print-query --query "$default" --prompt "$prompt" --layout reverse --info hidden "$@")" || status=$?
   if [ "$status" -ne 0 ] && [ "$status" -ne 1 ]; then
     return 1
   fi

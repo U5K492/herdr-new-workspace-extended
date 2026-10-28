@@ -17,7 +17,7 @@ Sleep 1.5s
 
 Ctrl+B
 Type "N"
-Wait+Screen /New workspace with a name/
+Wait+Screen /New worktree with a branch name/
 Sleep 1s
 Enter
 Wait+Screen /Workspace name>/
